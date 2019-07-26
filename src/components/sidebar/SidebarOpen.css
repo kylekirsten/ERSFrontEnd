@@ -1,0 +1,24 @@
+.open-container{
+    position: fixed;
+    width: 36px;
+    height: 30px;
+    left: 25px;
+    top: 13px;
+    z-index:10;
+    cursor:pointer;
+}
+.open-symbol{
+    position: absolute;
+    height: 20%;
+    left: 0px;
+    right: 0px;
+    top: 0%;
+    opacity: 1;
+    background-color: #ddd;
+}
+.open-symbol-2 {
+    top: 40%;
+}
+.open-symbol-3 {
+    top: 80%;
+}

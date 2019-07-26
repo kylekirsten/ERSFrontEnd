@@ -1,0 +1,40 @@
+.sidebar button{
+    background-color:#8BBEB2;
+    height: 7em;
+    width: 15em;
+    color: black;
+    border-radius: 2px;
+    outline:0;
+    margin:0px 0px 15px 0px;
+    border: 1px solid #111;
+    font-family: 'Muli',
+    sans-serif;
+    font-size: 16px;
+    cursor:pointer;
+    padding: auto;
+}
+
+
+.sidebar button:hover{
+    background-color: rgb(80, 79, 79);
+    transition: background-color 150ms, color 150ms;
+    outline:0;
+}
+.sidebar button:active{
+    outline:0;
+}
+
+.sidebar button a{
+    color: black;
+    display:block;
+    text-decoration:none;
+    width: 100%;
+    height: 100%;
+    font-size: 1.3em;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+.sidebar button a:hover{
+    color: #aaa;
+}

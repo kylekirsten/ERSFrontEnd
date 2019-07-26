@@ -1,0 +1,19 @@
+.sidebar {
+    text-align: center;
+    max-width: 375px;
+    padding: 10px 20px;
+    background-color: #18252a;
+    background-color: #18314F;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    position:absolute;
+    z-index: 12;
+    height: 100%;
+}
+.sidebar h1 {
+  color: #ccc;
+  font-size: 2em;
+  font-weight: 600;
+  padding:5px;
+}
