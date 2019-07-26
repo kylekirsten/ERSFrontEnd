@@ -4,10 +4,12 @@ import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
 interface IState {
     validated : boolean;
+    fileArr : any[];
 }
 export default class Login extends Component {
     state : IState = {
         validated : false,
+        fileArr : [],
       };
       handleSubmit = (event : any) => {
         const form = event.currentTarget;
@@ -18,6 +20,18 @@ export default class Login extends Component {
     
         this.setState({...this.state, validated: true});
       };
+      uploadHandler = ((event: any) => {
+        if(event.target.files){
+            this.setState({
+                fileArr: [...this.state.fileArr, event.target.files[0]]
+            });
+            console.log(this.state.fileArr);
+        }
+
+      });
+      fileChangedHandler = ((event: any) =>{
+
+      });
     private dollarAmountStyle = {
         color: 'white',
         textAlign: 'right',
@@ -31,7 +45,7 @@ export default class Login extends Component {
                 <Form noValidate validated={this.state.validated} onSubmit={this.handleSubmit}>
                     <Form.Group controlId="formType">
                         <Form.Label>Type</Form.Label>
-                        <Form.Control required as="select" defaultValue = {0}>
+                        <Form.Control required size="lg" as="select" defaultValue = {0}>
                             <option value = '1'>Lodging</option>
                             <option value = '2'>Travel</option>
                             <option value = '3'>Food</option>
@@ -65,6 +79,15 @@ export default class Login extends Component {
                         <Form.Control required as="textarea" rows="4" placeholder = "Short Description"/>
                         <Form.Control.Feedback type="invalid">
                             Please enter some comments about your reimbursement request.
+                        </Form.Control.Feedback>   
+                  </Form.Group>
+                  <Form.Group controlId="receiptUpload">
+                    <Form.Label>Upload Receipt (Optional)</Form.Label>
+                    <br/>
+                    <input type="file" onChange={this.fileChangedHandler}/>
+                    <Button variant = 'success' onClick={this.uploadHandler}>Upload</Button>
+                    <Form.Control.Feedback type="invalid">
+                            Please enter upload a valid file type
                         </Form.Control.Feedback>   
                   </Form.Group>
                     <Button variant="primary" type="submit">

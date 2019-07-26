@@ -5,7 +5,7 @@ import UserEditModal from '../popup/UserEditModal';
 import "react-table/react-table.css";
 import "./Table.css";
 import { UserData } from "../../../models/UserData";
-import APICall from "../../../utils/APICall";
+import * as APICall from "../../../utils/APICall";
 import ErrorModal from "../popup/ErrorModal";
 interface IState {
     data: any[],
@@ -22,7 +22,7 @@ class UserTable extends Component {
   };
   async loadData() {
     this.setState({data: [{userName: 'loading'},{userName: 'loading'}]});
-    const loadedData = await APICall('GET','/users');
+    const loadedData = await APICall.GET('GET','/users');
     if(loadedData instanceof Error){
       this.setState({errorModalPlaceholder: 
       <ErrorModal updateCallback = {this.errorModalClose} errorMessage = "Could not load data from server" ></ErrorModal>});
