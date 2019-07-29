@@ -35,17 +35,7 @@ export class ReimbursementData {
         }
         finally{}
         console.log(this);
-
         this.isOpen = isOpen;
-        //this.reimbursementId = parseInt(dataArr[0], 10);
-        //this.amount = parseInt(dataArr[1], 10);
-        //this.author = dataArr[2];
-        //this.dateSubmitted = new Date(dataArr[3]);
-        //this.dateResolved = new Date(dataArr[4]) || undefined;
-        //this.description = dataArr[5];
-        //this.resolver = parseInt(dataArr[6], 10) || undefined;
-        //this.status = parseInt(dataArr[7]);
-        //this.type = parseInt(dataArr[8]);
     }
     public checkIsOpen() : boolean {
         return this.isOpen;

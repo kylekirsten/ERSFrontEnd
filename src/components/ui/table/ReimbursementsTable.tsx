@@ -13,6 +13,7 @@ interface IState {
     errorModalPlaceholder : any;
     currentReimbursementModal: ReimbursementData;
     currentModalTemplate : any;
+    tableStructure : any;
 }
 export default class ReimbursementsTable extends Component<IProps,IState>{
     state : IState;
@@ -23,7 +24,8 @@ export default class ReimbursementsTable extends Component<IProps,IState>{
             tableIsLoading : true,
             errorModalPlaceholder : '',
             currentReimbursementModal : new ReimbursementData(false, {}),
-            currentModalTemplate : <div></div>,
+            currentModalTemplate : null,
+            tableStructure: <div></div>,
         }
     }  
     editModalClose = (() => {
@@ -40,24 +42,23 @@ export default class ReimbursementsTable extends Component<IProps,IState>{
       
     })
     errorModalClose = (() => {
-
+      this.setState({...this.state, errorModalPlaceholder: <div></div>})
     });
-    showServerError = () => {
+    showServerError = (message : any) => {
       this.setState({errorModalPlaceholder: 
-        <ErrorModal updateCallback = {this.errorModalClose} errorMessage = "Could not load data from server" ></ErrorModal>});
+        <ErrorModal updateCallback = {this.errorModalClose} errorMessage = {message} ></ErrorModal>});
     }
     async PopulateUserData(loadedData : any) {
       return await Promise.all(loadedData.map(async (element : any) => {
-        let authorData = await APICall.GET('GET',`/users/${element.author}`);
+        let authorData = await APICall.GET(`/users/${element.author}`);
         let resolverData;
         if(element.resolver){
-          resolverData = await APICall.GET('GET',`/users/${element.resolver}`);
+          resolverData = await APICall.GET(`/users/${element.resolver}`);
         }
         let newElement = Object.assign({},element);
         if(authorData instanceof Error || resolverData instanceof Error){
-          this.showServerError();
-          newElement.resolver = {userName: 'Error Retrieving Resolver'};
-          newElement.author = {userName: 'Error Retrieving Author'};
+          newElement.resolver = {userName: 'Error'};
+          newElement.author = {userName: 'Error'};
           newElement.dateSubmitted = new Date(element.dateSubmitted);
           return await newElement;
         }else{
@@ -71,96 +72,99 @@ export default class ReimbursementsTable extends Component<IProps,IState>{
     }
     async loadData() {
         //this.setState({data: [{userName: 'loading'},{userName: 'loading'}]});
-        const loadedDataPending = await APICall.GET('GET','/reimbursements/status/pending');
-        const loadedDataApproved = await APICall.GET('GET','/reimbursements/status/approved');
-        const loadedDataDenied = await APICall.GET('GET','/reimbursements/status/denied');
+        const loadedDataPending = await APICall.GET('/reimbursements/status/pending');
+        const loadedDataApproved = await APICall.GET('/reimbursements/status/approved');
+        const loadedDataDenied = await APICall.GET('/reimbursements/status/denied');
 
         //If APICall returns an error, show the error modal.
         if(loadedDataPending instanceof Error || loadedDataApproved instanceof Error || loadedDataDenied instanceof Error){
-          this.showServerError();
+          this.showServerError(loadedDataApproved.message);
         }else{
           let passedData : any[] = await this.PopulateUserData(loadedDataPending);
           let longerPassedData =  passedData.concat(await this.PopulateUserData(loadedDataApproved));
           let longestPassedData =  longerPassedData.concat(await this.PopulateUserData(loadedDataDenied));
-
-
-          console.log(longestPassedData);
           this.setState({data : longestPassedData
             , tableIsLoading : false});   
         }
     }
     componentDidMount(){
         this.loadData();
+        //setTimeout( () => {
+        //  this.setState({...this.state,data: [{}]})
+        //},5000)
     }
     render(){
+      if(!this.state.errorModalPlaceholder){
         return (
           <>
-            <MaterialTable
-                columns={[
-                    { title: 'ID', field: 'reimbursementId' },
-                    { title: 'Author', field: 'author.userName' },
-                    { title: 'Amount', field: 'amount', type: 'currency' },
-                    { title: 'Date', field: 'dateSubmitted', type: 'date'},
-                    { title: 'Resolver', field: 'resolver.userName'},
-                    { title: 'Status', field: 'status.status' }
-                ]}
-                data={this.state.data}
-                title="Reimbursements"
-                options={{
-                    selection: true,
-                    detailPanelType: 'single',
-                    detailPanelColumnAlignment: 'right',
-                    searchFieldAlignment: 'right',
-                    exportButton: true,
-                  }}
-                  onRowClick={(event, rowData, togglePanel) => {console.log(rowData);
-                    this.editModalOpen(rowData);}}
-                  actions={[
-                    {
-                      tooltip: 'Approve All',
-                      icon: 'check',
-                      iconProps: {
-                          color: 'primary',
-                          fontSize: 'large'
-                      },
-                      onClick: (evt, data) => alert('You want to delete ' + data.length + ' rows')
-                    },
-                    {
-                        tooltip: 'Deny All',
-                        icon: 'block',
-                        iconProps: {
-                            color: 'error',
-                            fontSize: 'large'
-                        },
-                        onClick: (evt, data) => alert('You want to delete ' + data.length + ' rows')
-                      }
-                  ]}
-                detailPanel={[
-                        {
-                          tooltip: 'Display Description',
-                          render: rowData => {
-                            return (
-                              <div
-                                style={{
-                                  fontSize: 12,
-                                  textAlign: 'center',
-                                  color: 'black',
-                                  backgroundColor: '',
-                                }}
-                              >
-                                {rowData.description}
-                              </div>
-                            )
-                          },
-                        },
-                ]}
-                isLoading = {this.state.tableIsLoading}
-            />
-            {this.state.errorModalPlaceholder}
+          <MaterialTable
+     columns={[
+         { title: 'ID', field: 'reimbursementId' },
+         { title: 'Author', field: 'author.userName' },
+         { title: 'Amount', field: 'amount', type: 'currency' },
+         { title: 'Date', field: 'dateSubmitted', type: 'date'},
+         { title: 'Resolver', field: 'resolver.userName'},
+         { title: 'Status', field: 'status.status' }
+     ]}
+     data={this.state.data}
+     title="Reimbursements"
+     options={{
+         selection: true,
+         detailPanelType: 'single',
+         detailPanelColumnAlignment: 'right',
+         searchFieldAlignment: 'right',
+         exportButton: true,
+       }}
+       onRowClick={(event, rowData, togglePanel) => {console.log(rowData);
+         this.editModalOpen(rowData);}}
+       actions={[
+         {
+           tooltip: 'Approve All',
+           icon: 'check',
+           iconProps: {
+               color: 'primary',
+               fontSize: 'large'
+           },
+           onClick: (evt, data) => alert('You want to delete ' + data.length + ' rows')
+         },
+         {
+             tooltip: 'Deny All',
+             icon: 'block',
+             iconProps: {
+                 color: 'error',
+                 fontSize: 'large'
+             },
+             onClick: (evt, data) => alert('You want to delete ' + data.length + ' rows')
+           }
+       ]}
+     detailPanel={[
+             {
+               tooltip: 'Display Description',
+               render: rowData => {
+                 return (
+                   <div
+                     style={{
+                       fontSize: 12,
+                       textAlign: 'center',
+                       color: 'black',
+                       backgroundColor: '',
+                     }}
+                   >
+                     {rowData.description}
+                   </div>
+                 )
+               },
+             },
+     ]}
+     isLoading = {this.state.tableIsLoading}
+      />
             {this.state.currentModalTemplate}
-
           </>
-          
         );
+     } else {
+       return (
+         this.state.errorModalPlaceholder
+       )
+     }
     }
 }

@@ -11,6 +11,7 @@ interface IState {
     data: any[],
     currentEditModal: UserData,
     modalTemplate: any,
+    errorModalPlaceholder: any,
 }
 class UserTable extends Component {
   handleChange = ((event : any) => {
@@ -19,13 +20,14 @@ class UserTable extends Component {
       data : [{}],
       currentEditModal: new UserData(false,[]),
       modalTemplate : <div></div>,
+      errorModalPlaceholder:null,
   };
   async loadData() {
-    this.setState({data: [{userName: 'loading'},{userName: 'loading'}]});
-    const loadedData = await APICall.GET('GET','/users');
+    this.setState({data: [{userName: 'loading'}]});
+    const loadedData = await APICall.GET('/users');
     if(loadedData instanceof Error){
       this.setState({errorModalPlaceholder: 
-      <ErrorModal updateCallback = {this.errorModalClose} errorMessage = "Could not load data from server" ></ErrorModal>});
+      <ErrorModal updateCallback = {this.errorModalClose} errorMessage = {loadedData.message} ></ErrorModal>});
     }else{
       const newArr : any = loadedData;
       newArr.forEach((element : any) => {
@@ -38,7 +40,7 @@ class UserTable extends Component {
     event.preventDefault();
   });
   errorModalClose = ((event: any) => {
-
+    this.setState({...this.state, errorModalPlaceholder: <div></div>})
   });
 
   handleEditClick = ((e: any) => {
@@ -88,9 +90,8 @@ class UserTable extends Component {
 
   render() {
     const { data } = this.state;
-
+    if(!this.state.errorModalPlaceholder){
     return (
-        
         <div>
             {this.state.modalTemplate}
           <ReactTable
@@ -135,6 +136,11 @@ class UserTable extends Component {
           />
         </div>
     );
+    } else {
+      return (
+      this.state.errorModalPlaceholder
+      );
+    }
   }
 }
 export {UserTable};

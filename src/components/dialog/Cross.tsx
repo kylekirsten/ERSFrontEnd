@@ -8,7 +8,7 @@ interface IState {
     hoverStyle : object
 }
  class Cross extends Component<IProps,IState>{
-    state : IState = {hoverStyle: {backgroundColor: '#555'}};
+    state : IState = {hoverStyle: {backgroundColor: '#999'}};
     static propTypes = {
         exitCallback: PropTypes.func
       };
@@ -18,10 +18,10 @@ interface IState {
         this.props.exitCallback();
     });
     startHover= ((event: MouseEvent<HTMLDivElement>) => {
-        this.setState({hoverStyle : {backgroundColor: '#ddd'}});
+        this.setState({hoverStyle : {backgroundColor: '#eee'}});
     });
     endHover = ((event: MouseEvent<HTMLDivElement>) => {
-        this.setState({hoverStyle : {backgroundColor: '#555'}});
+        this.setState({hoverStyle : {backgroundColor: '#999'}});
     });
 
     render() {

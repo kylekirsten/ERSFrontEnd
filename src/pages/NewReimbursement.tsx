@@ -32,12 +32,6 @@ export default class Login extends Component {
       fileChangedHandler = ((event: any) =>{
 
       });
-    private dollarAmountStyle = {
-        color: 'white',
-        textAlign: 'right',
-        WebkitTransition: 'all', // note the capital 'W' here
-        msTransition: 'all' // 'ms' is the only lowercase vendor prefix
-      };
     render() {  
         return (
             <div className = "login-container">

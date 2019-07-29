@@ -1,51 +1,70 @@
 import axios from 'axios';
-const location = 'http://localhost:5000';
-const GET = async (method : string = 'GET', route: string = '/') => {
-    let instance = axios.create({
-        headers: {
-          common: {        // can be common or any other method
-            Authorization: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInJvbGUiOnsicm9sZUlkIjoiMTAiLCJyb2xlIjoiQURNSU4ifSwiaWF0IjoxNTY0MTY3OTQzLCJleHAiOjE1NjQyNTQzNDN9.dhMRKV34NpmtPW0OiYqIvKEeeES3xGtQW02ZQYJ9p8k',
-          }
-        }
-      });
-      const data = await instance.get(location + route).then((response : any) => {
-            return generateAppropriateResponse(response);
+import config from '../config.json';
+let instance = axios.create({
+  headers: {
+    common: {
+      Authorization: window.localStorage.getItem('token'),
+    }
+  }
+});
+const GET = async (route: string = '/') => {
+  console.log(window.localStorage.getItem('token'));
+      const data = await instance.get(config.backend.serverURL + route).then((response : any) => {
+          return response;
         })
-        .catch(e => {
-            console.log(e);
-            return new Error(e);
+        .catch((error) => {
+          console.log(error);
+          return error.response;
         });
-
-    return data;
-
-
+        return generateAppropriateResponse(await data,false);
 }
-
-const Login =  (async (username : string, password: string) => {
-  const response : any = await axios.post(location + '/login',
-  {
-    username: username,
-    password: password,
-  }).catch((error) => {
-  }).finally(()=>{
-      return generateAppropriateResponse(response);
-    //Need to make this return right thing
+const POST = async (route: string = '/', data : any = {}) => {
+  //Should modify to use request.body instead of request.params
+  let fullUrl = config.backend.serverURL + route + '?';
+  //Generate appropriate Url
+  Object.keys(data).forEach(key => {
+    fullUrl += `${key}=${data[key as any]}&`;
   });
-
+  const responseData = await instance.post(fullUrl).catch((error) => {
+    console.log(error);
+    return error.response;
+  });
+  console.log(await responseData);
+  return generateAppropriateResponse(await responseData, true);
+}
+const Login =  (async (username : string, password: string) => {
+  return await POST('/login', {username: username, password: password});
 });
 
-const generateAppropriateResponse = (response : any) => {
+const generateAppropriateResponse = (response : any, login : boolean) => {
+  if(!response){
+    return new Error(config.messages.noServerResponse);
+  }
   if(response.status === 401){
-    return new Error('You do not have access to this resource');
+    switch(response.message){
+      case config.serverMessages.invalidToken:
+        return new Error(config.messages.badToken);
+      case config.serverMessages.unAuthorized:
+        return new Error(config.messages.noAccess)
+    }
   }
   if(response.status === 500){
-    return new Error('Could not complete request. Internal Server Error');
+    return new Error(config.messages.internalServerError);
   }
   if(response.status === 400){
-    return new Error('Could not complete request. Passed parameters were invalid');
+    //If this function is called from login function, send back invalid credentials message instead
+    //of bad request. More user friendly.
+    if(login){
+      return new Error(config.messages.invalidCredentials);
+    } else {
+      return new Error(config.messages.badRequest);
+    }
+  }
+  if(response.status === 404){
+    return new Error(config.messages.notFound);
   }
   if(response.status === 200 || response.status === 201){
     return response.data;
   }
 }
-export {Login, GET};
+export {Login, GET, POST};
