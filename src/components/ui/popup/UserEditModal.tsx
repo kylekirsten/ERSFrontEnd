@@ -1,4 +1,4 @@
-import React, {Component, MouseEvent} from 'react';
+import React, {Component} from 'react';
 import PropTypes from "prop-types";
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
@@ -10,14 +10,12 @@ interface IProps {
     updateCallback : Function,
 }
 interface IState {
-    hoverStyle : object
 }
  class UserEditModal extends Component<IProps,IState>{
     state : IState;
     constructor(props : IProps){
         super(props);
         this.state = {
-            hoverStyle : {backgroundColor: '#373a47'},
         }
     }  
     static propTypes = {

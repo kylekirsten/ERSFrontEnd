@@ -8,12 +8,10 @@ let instance = axios.create({
   }
 });
 const GET = async (route: string = '/') => {
-  console.log(window.localStorage.getItem('token'));
       const data = await instance.get(config.backend.serverURL + route).then((response : any) => {
           return response;
         })
         .catch((error) => {
-          console.log(error);
           return error.response;
         });
         return generateAppropriateResponse(await data,false);
@@ -26,10 +24,8 @@ const POST = async (route: string = '/', data : any = {}) => {
     fullUrl += `${key}=${data[key as any]}&`;
   });
   const responseData = await instance.post(fullUrl).catch((error) => {
-    console.log(error);
     return error.response;
   });
-  console.log(await responseData);
   return generateAppropriateResponse(await responseData, true);
 }
 const Login =  (async (username : string, password: string) => {

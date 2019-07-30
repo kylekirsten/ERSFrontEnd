@@ -1,7 +1,8 @@
-import React, {Component, useState} from 'react';
+import React, {Component} from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
+import { Redirect } from 'react-router';
 interface IState {
     validated : boolean;
     fileArr : any[];
@@ -39,7 +40,8 @@ export default class Login extends Component {
                 <Form noValidate validated={this.state.validated} onSubmit={this.handleSubmit}>
                     <Form.Group controlId="formType">
                         <Form.Label>Type</Form.Label>
-                        <Form.Control required size="lg" as="select" defaultValue = {0}>
+                        <Form.Control required size="lg" as="select" className = 'custom-select' defaultValue = {0}>
+                            <option selected>Choose one...</option>
                             <option value = '1'>Lodging</option>
                             <option value = '2'>Travel</option>
                             <option value = '3'>Food</option>

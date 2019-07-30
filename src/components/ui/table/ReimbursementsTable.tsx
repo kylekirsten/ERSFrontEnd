@@ -1,5 +1,5 @@
-import React, {Component, MouseEvent} from 'react';
-import MaterialTable, { MTableToolbar } from 'material-table';
+import React, {Component} from 'react';
+import MaterialTable from 'material-table';
 import * as APICall from '../../../utils/APICall';
 import ErrorModal from '../popup/ErrorModal'
 import { ReimbursementData } from '../../../models/ReimbursementData';
@@ -115,7 +115,7 @@ export default class ReimbursementsTable extends Component<IProps,IState>{
          searchFieldAlignment: 'right',
          exportButton: true,
        }}
-       onRowClick={(event, rowData, togglePanel) => {console.log(rowData);
+       onRowClick={(event, rowData, togglePanel) => {
          this.editModalOpen(rowData);}}
        actions={[
          {

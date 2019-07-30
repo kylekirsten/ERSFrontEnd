@@ -1,4 +1,4 @@
-import React, {Component, MouseEvent} from 'react';
+import React, {Component} from 'react';
 import PropTypes from "prop-types";
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';

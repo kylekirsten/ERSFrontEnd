@@ -1,4 +1,17 @@
-import { createStore, Store } from 'redux'
-import authVar from './reducers/index'
-const storeVar: Store<any> = createStore(authVar);
-export default storeVar;
+import { Store, createStore, compose, applyMiddleware } from 'redux';
+import reduxThunk from 'redux-thunk';
+import logger from 'redux-logger';
+import { state } from './reducers';
+
+const a: any = window;
+const composeEnhancers = a.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+const enhancer = composeEnhancers(
+    applyMiddleware(reduxThunk, logger),
+    // other store enhancers if any
+);
+const store: Store<any> = createStore(
+    state,
+    enhancer
+);
+export default store;

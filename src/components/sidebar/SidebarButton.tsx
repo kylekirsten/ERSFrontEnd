@@ -11,9 +11,6 @@ interface IProps {
     clickCallback: Function,
 }
 export default class SidebarButton extends Component<IProps, IState> {
-    constructor(props : any){
-        super(props);
-    }
     static propTypes = {
         text: PropTypes.string,
         route: PropTypes.string,

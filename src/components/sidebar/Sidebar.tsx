@@ -13,9 +13,6 @@ interface IProps {
     startVisible : boolean;
 }
 export default class Sidebar extends Component<IProps,IState> {
-    constructor(props: any){
-        super(props);
-    }
     static propTypes = {
         startVisible : PropTypes.bool,
     }

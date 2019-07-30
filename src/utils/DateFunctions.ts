@@ -6,7 +6,6 @@ export function convertTimestampToDate(timestamp : number) : string{
     const day = date.getDate();
     const hours = date.getHours();
     const minutes = "0" + date.getMinutes();
-    const seconds = "0" + date.getSeconds();
     // Display date time in MM-dd-yyyy h:m:s format
     const convdataTime = month+'-'+day+'-'+year+' '+hours + ':' + minutes.substr(-2);
     return convdataTime;

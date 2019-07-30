@@ -1,37 +1,25 @@
 import {
     LOGIN_SUCCESSFUL,
     TOGGLE_AUTH_STATUS,
+    CHECK_AUTH_REQUEST
   } from '../actions/Authentication.action';
-  import {IAppState} from './index';
-const initialState : IAppState = {
-    userData : {
-        isVerified : false,
-        userProfile : null,
-    }
+  import {IAuthState} from './index';
+import UserProfile from '../models/UserProfile';
+const initialState : IAuthState = {
+      isVerified : false,
+      userProfile: {userId: 0,firstName: 'loading',lastName: 'loading',email: 'loading',
+       userName: 'loading', role: {roleId: 0, role: 'loading'}},
+      isFetching : false,
   }
-  function assignUserData(state = {}, action : any) {
-    switch (action.type) {
-      case LOGIN_SUCCESSFUL:
-        const newState = {...state, userProfile: action.text, isVerified : true};
-        return newState
-      case TOGGLE_AUTH_STATUS:
-          return {...state, isVerified: false}
-      default:
-        return state
+  export const authReducer = (state = initialState, action: any) => {
+    switch(action.type) {
+        case LOGIN_SUCCESSFUL:
+          return { ...state, userProfile : action.payload, isVerified: true, isFetching: false}
+        case TOGGLE_AUTH_STATUS:
+            return {...state, isVerified: false }
+        case CHECK_AUTH_REQUEST:
+            return {...state, loadingNewPoke: true}
+        default: break;
     }
-  }
-  
- export function authVar(state = initialState, action : any) {
-    switch (action.type) {
-      case LOGIN_SUCCESSFUL:
-        return Object.assign({}, state, {
-          userData: assignUserData(state.userData, action)
-        })
-      case TOGGLE_AUTH_STATUS:
-        return Object.assign({}, state, {
-          userData: assignUserData(state.userData, action)
-        })
-      default:
-        return state
-    }
-  }
+    return state;
+}

@@ -10,15 +10,17 @@ class UserProfile {
         this.lastName = lastName;
         this.email = email;
         this.role = role;
-        this.initSession();
+        if(token){
+            this.initSession();
+        }
     }
-    private userId : number;
-    private userName : string;
-    private token : string;
-    private firstName : string;
-    private lastName : string;
-    private email : string;
-    private role : number;
+    public userId : number;
+    public userName : string;
+    public token : string;
+    public firstName : string;
+    public lastName : string;
+    public email : string;
+    public role : number;
     getUserId() : number {
         return this.userId;
     }
@@ -46,7 +48,6 @@ class UserProfile {
     private async initSession(): Promise<any> {
         const userSessionDetails = await Session.retrieveSession(this.token);
         Object.assign(this, userSessionDetails);
-        console.log(this);
         return true;
     }
     private async isValidSession() : Promise<boolean> {

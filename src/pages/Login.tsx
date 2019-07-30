@@ -1,16 +1,26 @@
-import React, {Component, useState} from 'react';
+import React, {Component} from 'react';
 import './Login.css';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import * as APICall from '../utils/APICall';
 import ErrorModal from '../components/ui/popup/ErrorModal';
 import UserProfile from '../models/UserProfile';
+import { IAuthState, IAppState } from '../reducers';
+import { loginSuccessful, toggleAuthStatus } from '../actions/Authentication.action';
+import { connect } from 'react-redux';
 interface IState {
     validated : boolean;
     errorModalPlaceholder : any;
     formFields : any;
 }
-export default class Login extends Component {
+export interface IAuthProps {
+    //data from state store
+    auth: IAuthState,
+    //Action creators from the dispatcher
+    loginSuccessful: (dataObj : object) => void;
+    toggleAuthStatus: () => void;
+}
+export class Login extends Component<IAuthProps,IState> {
     state : IState = {
         validated : false,
         errorModalPlaceholder: null,
@@ -39,7 +49,8 @@ export default class Login extends Component {
         <ErrorModal errorMessage = {message} updateCallback= {this.closeError}></ErrorModal>});
       }
       closeError = () => {
-          this.setState({...this.state, errorModalPlaceholder: null, password: ''});
+          this.setState({...this.state, errorModalPlaceholder: null, 
+            formFields: {username: this.state.formFields.username, password: ''}});
       }
       checkCredentials = async (data: FormData) => {
         const result = await APICall.Login(this.state.formFields.username.value, this.state.formFields.password.value);
@@ -47,8 +58,9 @@ export default class Login extends Component {
             this.showError(result.message);
         }else{
             console.log(result);
-            let userInfo = new UserProfile(result.token);
-            window.localStorage.setItem('token', userInfo.getToken());
+            window.localStorage.setItem('token', result.token);
+            this.props.loginSuccessful(result);
+            this.showError('ya logged in m8');
         }
       }
       changeHandler = (event: any) => {    
@@ -98,3 +110,14 @@ export default class Login extends Component {
     
     }
 }
+const mapStateToProps = (state : IAppState) => {
+    return {
+        auth: state.auth
+    }
+}
+//This object definition will be used to map action creators to properties
+const mapDispatchToProps = {
+    loginSuccessful: loginSuccessful,
+    toggleAuthStatus: toggleAuthStatus
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

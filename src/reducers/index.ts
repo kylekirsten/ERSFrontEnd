@@ -1,18 +1,20 @@
 import { combineReducers } from "redux";
-import { authVar } from "./Authentication.reducer";
+import { authReducer } from "./Authentication.reducer";
+import UserProfile from "../models/UserProfile";
 
-export interface IAppState {
-    userData : object,
+export interface IAuthState {
+    isVerified : boolean, 
+    userProfile : {userId : number, userName: string, firstName : string,
+         lastName: string, email: string, role: {roleId : number, role: string}},
+    isFetching : boolean,
 };
 
-//Composed state of all substates
-//means that to access clickers -> state.cicker.clicks
-export interface IState {
-    authVar: IAppState
+//Access to authorization information should be state.auth....
+//User data: state.auth.userData
+export interface IAppState {
+    auth: IAuthState,
 }
 
-export const state = combineReducers<IState>({
-    authVar,
+export const state = combineReducers<IAppState>({
+    auth: authReducer,
 })
-
-export default authVar
