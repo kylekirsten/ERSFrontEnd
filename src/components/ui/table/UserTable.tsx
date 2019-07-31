@@ -81,9 +81,9 @@ class UserTable extends Component {
         style={{ backgroundColor: "" }}
         
         suppressContentEditableWarning
-      /><button className='btn btn-primary' data-rowid = {cellInfo.index}
-                onClick={this.handleEditClick}>Edit</button>
-      <button className='btn btn-secondary'>Delete</button>
+      /><button className='btn btn-secondary' data-rowid = {cellInfo.index}
+                onClick={this.handleEditClick}>Edit User Information</button><br/>
+      <button className='btn btn-success'>View Reimbursements</button>
       </>
     );
   });

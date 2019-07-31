@@ -19,6 +19,8 @@
     "react-table": "^6.10.0",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
+    "timeago-react": "^2.0.1",
+    "timeago.js": "^4.0.0-beta.2",
     "typescript": "3.5.3"
   },
   "devDependencies": {

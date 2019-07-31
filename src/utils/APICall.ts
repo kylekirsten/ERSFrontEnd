@@ -23,15 +23,30 @@ const POST = async (route: string = '/', data : any = {}) => {
   Object.keys(data).forEach(key => {
     fullUrl += `${key}=${data[key as any]}&`;
   });
+  fullUrl = fullUrl.substring(0,fullUrl.length - 1)
   const responseData = await instance.post(fullUrl).catch((error) => {
     return error.response;
   });
-  return generateAppropriateResponse(await responseData, true);
+  let isLogin =  route === '/login' ? true : false;
+  return generateAppropriateResponse(await responseData, isLogin);
+    
 }
 const Login =  (async (username : string, password: string) => {
   return await POST('/login', {username: username, password: password});
 });
-
+const PATCH = async (route: string = '/', data : any = {}) => {
+  //Should modify to use request.body instead of request.params
+  let fullUrl = config.backend.serverURL + route + '?';
+  //Generate appropriate Url
+  Object.keys(data).forEach(key => {
+    fullUrl += `${key}=${data[key as any]}&`;
+  });
+  fullUrl = fullUrl.substring(0,fullUrl.length - 1);
+  const responseData = await instance.patch(fullUrl).catch((error) => {
+    return error.response;
+  });
+  return generateAppropriateResponse(await responseData, false);
+}
 const generateAppropriateResponse = (response : any, login : boolean) => {
   if(!response){
     return new Error(config.messages.noServerResponse);
@@ -48,12 +63,13 @@ const generateAppropriateResponse = (response : any, login : boolean) => {
     return new Error(config.messages.internalServerError);
   }
   if(response.status === 400){
+    console.log(response);
     //If this function is called from login function, send back invalid credentials message instead
     //of bad request. More user friendly.
     if(login){
       return new Error(config.messages.invalidCredentials);
     } else {
-      return new Error(config.messages.badRequest);
+      return new Error(response.data);
     }
   }
   if(response.status === 404){
@@ -63,4 +79,4 @@ const generateAppropriateResponse = (response : any, login : boolean) => {
     return response.data;
   }
 }
-export {Login, GET, POST};
+export {Login, GET, POST, PATCH};

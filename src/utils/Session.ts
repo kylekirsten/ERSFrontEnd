@@ -21,3 +21,11 @@ export async function retrieveSession(token : string) : Promise<any>{
     }
     return await APICall.GET(`/users/${userId}`);
 }
+export function getCurrentUserID() : number {
+    const token = window.localStorage.getItem('token') || window.sessionStorage.getItem('token');
+    if(token){
+        const tokenPayload : any = jwt.decode(token);
+        return tokenPayload.userId;
+    }
+    return 0;
+}

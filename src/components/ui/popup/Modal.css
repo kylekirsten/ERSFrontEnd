@@ -1,0 +1,10 @@
+.edit-reimbursement-status-box label {
+    margin-right:5px;
+}
+.edit-reimbursement-buttons {
+    margin: auto;
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}

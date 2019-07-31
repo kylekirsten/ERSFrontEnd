@@ -4,7 +4,6 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import * as APICall from '../utils/APICall';
 import ErrorModal from '../components/ui/popup/ErrorModal';
-import UserProfile from '../models/UserProfile';
 import { IAuthState, IAppState } from '../reducers';
 import { loginSuccessful, toggleAuthStatus } from '../actions/Authentication.action';
 import { connect } from 'react-redux';
@@ -40,7 +39,7 @@ export class Login extends Component<IAuthProps,IState> {
         if (form.checkValidity() === false) {
             event.stopPropagation();
         } else{
-            this.checkCredentials(data);
+            this.checkCredentials();
         }
         this.setState({...this.state, validated: true});
       };
@@ -52,7 +51,7 @@ export class Login extends Component<IAuthProps,IState> {
           this.setState({...this.state, errorModalPlaceholder: null, 
             formFields: {username: this.state.formFields.username, password: ''}});
       }
-      checkCredentials = async (data: FormData) => {
+      checkCredentials = async () => {
         const result = await APICall.Login(this.state.formFields.username.value, this.state.formFields.password.value);
         if(result instanceof Error){
             this.showError(result.message);

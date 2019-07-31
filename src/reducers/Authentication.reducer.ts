@@ -4,7 +4,7 @@ import {
     CHECK_AUTH_REQUEST
   } from '../actions/Authentication.action';
   import {IAuthState} from './index';
-import UserProfile from '../models/UserProfile';
+
 const initialState : IAuthState = {
       isVerified : false,
       userProfile: {userId: 0,firstName: 'loading',lastName: 'loading',email: 'loading',

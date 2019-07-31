@@ -44,7 +44,7 @@ export class Content extends Component<IAuthProps,IState> {
             } else {
                     this.props.toggleAuthStatus();
             }
-        },20000);
+        },60000);
     }
     async isAuthenticated() : Promise<boolean> {
         let token = window.localStorage.getItem('token') || window.sessionStorage.getItem('token');
@@ -67,7 +67,6 @@ export class Content extends Component<IAuthProps,IState> {
                 </Nav>
             </Navbar>
             <div className = 'content'>
-                <h1 className = 'page-title'>{this.props.auth.userProfile.email}</h1>
                 <Switch>
                     <Route path="/" exact component={Home} />
                     <Route path="/login" exact component={Login} />

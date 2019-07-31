@@ -5,48 +5,72 @@ import ErrorModal from '../popup/ErrorModal'
 import { ReimbursementData } from '../../../models/ReimbursementData';
 import ReimbursementEditModal from '../popup/ReimbursementEditModal';
 import * as DateFunctions from '../../../utils/DateFunctions';
+import Popover from 'react-bootstrap/Popover';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import './Table.css';
+import Tooltip from 'react-bootstrap/Tooltip';
+import ConfirmationModal from '../popup/ConfirmationModal';
+export enum Status{
+  Pending = "Pending",
+  Approved = "Approved",
+  Denied = "Denied"
+}
 interface IProps {
+  status: Status
 }
 interface IState {
     data : object[];
     tableIsLoading : boolean;
-    errorModalPlaceholder : any;
     currentReimbursementModal: ReimbursementData;
     currentModalTemplate : any;
+    Error: any;
     tableStructure : any;
+    editData: ReimbursementData;
+    isEditing : boolean;
+    bulkAction : any;
 }
-export default class ReimbursementsTable extends Component<IProps,IState>{
+export class ReimbursementsTable extends Component<IProps,IState>{
     state : IState;
     constructor(props : IProps){
         super(props);
         this.state = {
-            data : [{}],
+            data : [{author: {userId: 0, userName: 'loading', firstName: 'loading', lastName: 'loading',
+             email: 'loading', role: {roleId: 0, role: 'loading'}}, resolver:
+              {userId: 0, userName: 'loading', firstName: 'loading', lastName: 'loading',
+              email: 'loading', role: {roleId: 0, role: 'loading'}}
+              ,dateSubmitted: 1000000, dateResolved: 10000000}],
             tableIsLoading : true,
-            errorModalPlaceholder : '',
             currentReimbursementModal : new ReimbursementData(false, {}),
             currentModalTemplate : null,
+            Error: {
+              isError : false,
+              message : '',
+            },
             tableStructure: <div></div>,
+            editData: new ReimbursementData(false, {}),
+            isEditing: false,
+            bulkAction: {
+              currentAction: null,
+              isConfirmed: true,
+              editData : []
+            }
         }
     }  
     editModalClose = (() => {
       this.state.currentReimbursementModal.toggleOpenState();
-      this.setState({...this.state, currentModalTemplate : <></>});
+      this.setState({...this.state, isEditing: false});
 
     });
     editModalOpen = ((data : any) => {
       let dataInside = data;
-      this.setState({...this.state, currentReimbursementModal : new ReimbursementData(false,dataInside)});
-      this.setState({...this.state, currentModalTemplate: <ReimbursementEditModal editData
-      = {this.state.currentReimbursementModal} updateCallback = {this.editModalClose} />
-        });
+      this.setState({...this.state, isEditing: true, editData: new ReimbursementData(false, dataInside)});
       
     })
     errorModalClose = (() => {
-      this.setState({...this.state, errorModalPlaceholder: <div></div>})
+      this.setState({...this.state, Error:{...this.state.Error,isError: false}})
     });
     showServerError = (message : any) => {
-      this.setState({errorModalPlaceholder: 
-        <ErrorModal updateCallback = {this.errorModalClose} errorMessage = {message} ></ErrorModal>});
+      this.setState({...this.state, Error:{...this.state.Error,isError: true, message}})
     }
     async PopulateUserData(loadedData : any) {
       return await Promise.all(loadedData.map(async (element : any) => {
@@ -59,65 +83,120 @@ export default class ReimbursementsTable extends Component<IProps,IState>{
         if(authorData instanceof Error || resolverData instanceof Error){
           newElement.resolver = {userName: 'Error'};
           newElement.author = {userName: 'Error'};
-          newElement.dateSubmitted = new Date(element.dateSubmitted);
           return await newElement;
         }else{
           newElement.resolver = resolverData;
           newElement.author = authorData;
-          newElement.dateSubmitted = DateFunctions.convertTimestampToDate(element.dateSubmitted);
-
           return await newElement;
           }
       }));
     }
+
     async loadData() {
         //this.setState({data: [{userName: 'loading'},{userName: 'loading'}]});
-        const loadedDataPending = await APICall.GET('/reimbursements/status/pending');
-        const loadedDataApproved = await APICall.GET('/reimbursements/status/approved');
-        const loadedDataDenied = await APICall.GET('/reimbursements/status/denied');
+        const loadedData = await APICall.GET(`/reimbursements/status/${this.props.status}`);
 
         //If APICall returns an error, show the error modal.
-        if(loadedDataPending instanceof Error || loadedDataApproved instanceof Error || loadedDataDenied instanceof Error){
-          this.showServerError(loadedDataApproved.message);
+        if(loadedData instanceof Error){
+          this.showServerError(loadedData.message);
         }else{
-          let passedData : any[] = await this.PopulateUserData(loadedDataPending);
-          let longerPassedData =  passedData.concat(await this.PopulateUserData(loadedDataApproved));
-          let longestPassedData =  longerPassedData.concat(await this.PopulateUserData(loadedDataDenied));
-          this.setState({data : longestPassedData
+          let passedData : any[] = await this.PopulateUserData(loadedData);
+          this.setState({data : passedData
             , tableIsLoading : false});   
         }
     }
     componentDidMount(){
         this.loadData();
-        //setTimeout( () => {
-        //  this.setState({...this.state,data: [{}]})
-        //},5000)
+    }
+     bulkActionHandler  =  (async(confirmed : boolean) => {
+      this.setState({bulkAction: {...this.state.bulkAction, isConfirmed: confirmed}});
+      if(!confirmed) { return;}
+      this.setState({tableIsLoading: true});
+      let keyword = this.state.bulkAction.currentAction;
+      let arr = await this.state.bulkAction.editData.forEach(async (element : any) => {
+        const loadedData = await APICall.PATCH('/reimbursements',
+                            {reimbursementId: element.reimbursementId, status: keyword});
+        if(loadedData instanceof Error){
+          this.showServerError('Could not perform all actions due to : ' + loadedData.message);
+          return;
+        }
+        console.log(await loadedData)
+      });
+      this.setState({tableIsLoading : false});
+
+
+    });
+    searchReimbursementsByUser(e: any){
+      e.stopPropagation();
+    }
+
+    renderPopover(rowData : any,type : string){
+      return(
+        <>
+            <OverlayTrigger trigger="hover" placement="right-start"  delay={{ show: 300, hide: 300 }}
+                            overlay={
+            <Popover id={`popover-${type}- ${rowData[type].userId}`}
+                  title={rowData[type].firstName + ' ' + rowData[type].lastName}>
+                <p><i>Email</i>: {rowData[type].email}</p>
+                <p><i>Role</i> : {rowData[type].role.role.charAt(0) + rowData[type].role.role.substring(1).toLowerCase()}</p>
+              </Popover>}>
+              <a className = "username-link" onClick = {this.searchReimbursementsByUser}>{rowData[type].userName}</a>
+
+            </OverlayTrigger>
+        </>
+      )
+    }
+    renderRealDate(rowData : any, type : string){
+      return (
+      <>
+          <OverlayTrigger trigger="hover" placement="right"  delay={{ show: 300, hide: 300 }}
+                            overlay={
+            <Tooltip id={'popover-' + type + '-' + rowData[type]}>
+            {DateFunctions.convertTimestampToDate(rowData[type])}</Tooltip>
+                  }>
+              <a className = "username-link">{DateFunctions.readableTimestampSubtract(rowData[type])}</a>
+            </OverlayTrigger>        
+      </> )
     }
     render(){
-      if(!this.state.errorModalPlaceholder){
         return (
           <>
           <MaterialTable
      columns={[
-         { title: 'ID', field: 'reimbursementId' },
-         { title: 'Author', field: 'author.userName' },
-         { title: 'Amount', field: 'amount', type: 'currency' },
-         { title: 'Date', field: 'dateSubmitted', type: 'date'},
-         { title: 'Resolver', field: 'resolver.userName'},
-         { title: 'Status', field: 'status.status' }
+         { title: 'ID', field: 'reimbursementId', searchable: false},
+         { title: 'Author', field: 'author.userName', render: rowData => 
+         this.renderPopover(rowData,'author')
+    
+        },
+         { title: 'Amount', field: 'amount', type: 'currency', searchable: false },
+         this.props.status === Status.Pending ? 
+         { title: 'Submitted', field: 'dateSubmitted', defaultSort: 'desc', searchable: false, render: rowData =>
+            this.renderRealDate(rowData, 'dateSubmitted')} :
+          { title: 'Submitted', field: 'dateSubmitted', searchable: false, render: rowData =>
+            this.renderRealDate(rowData, 'dateSubmitted')},
+          this.props.status !== Status.Pending ?
+         { title: 'Resolved', field: 'dateResolved', searchable: false, defaultSort: 'desc', render: rowData =>
+            this.renderRealDate(rowData, 'dateResolved') } : {hidden: true},
+        this.props.status !== Status.Pending ?
+         {title: 'Resolver', field: 'resolver.userName' , render: rowData => 
+          this.renderPopover(rowData,'resolver')
+        } : {hidden:true},
      ]}
      data={this.state.data}
-     title="Reimbursements"
-     options={{
+     localization = {{toolbar: {searchPlaceholder: "Search by name or type"}}}
+     title={`${this.props.status} Reimbursements`}
+     options={this.props.status === Status.Pending ?{
          selection: true,
          detailPanelType: 'single',
          detailPanelColumnAlignment: 'right',
          searchFieldAlignment: 'right',
          exportButton: true,
+       } : {
+         exportButton: true,
+         detailPanelColumnAlignment: 'right',
+         searchFieldAlignment: 'right',
        }}
-       onRowClick={(event, rowData, togglePanel) => {
-         this.editModalOpen(rowData);}}
-       actions={[
+       actions={this.props.status === Status.Pending ?[
          {
            tooltip: 'Approve All',
            icon: 'check',
@@ -125,7 +204,8 @@ export default class ReimbursementsTable extends Component<IProps,IState>{
                color: 'primary',
                fontSize: 'large'
            },
-           onClick: (evt, data) => alert('You want to delete ' + data.length + ' rows')
+           onClick: (evt, data) => this.setState({bulkAction: 
+            {...this.state.bulkAction, currentAction: 'approved', editData: data, isConfirmed: false }})
          },
          {
              tooltip: 'Deny All',
@@ -134,37 +214,50 @@ export default class ReimbursementsTable extends Component<IProps,IState>{
                  color: 'error',
                  fontSize: 'large'
              },
-             onClick: (evt, data) => alert('You want to delete ' + data.length + ' rows')
+             onClick: (evt, data) => this.setState({bulkAction: 
+              {...this.state.bulkAction, currentAction: 'denied', editData: data, isConfirmed: false }})
            }
-       ]}
+       ] : []}
      detailPanel={[
              {
-               tooltip: 'Display Description',
-               render: rowData => {
-                 return (
-                   <div
-                     style={{
-                       fontSize: 12,
-                       textAlign: 'center',
-                       color: 'black',
-                       backgroundColor: '',
-                     }}
-                   >
-                     {rowData.description}
-                   </div>
-                 )
-               },
-             },
+              tooltip: 'Edit',
+              icon: 'edit',
+              openIcon: 'edit',
+              render: rowData => {
+                return (
+                  <>
+                    {rowData ?<ReimbursementEditModal editData
+      = {new ReimbursementData(false, rowData)} updateCallback = {this.editModalClose} /> : null}
+      </>
+                )
+              },
+            },
+            {
+              tooltip: 'Display Description',
+              render: rowData => {
+                return (
+                  <div
+                    style={{
+                      fontSize: 12,
+                      textAlign: 'center',
+                      color: 'black',
+                      backgroundColor: '',
+                    }}
+                  >
+                    {rowData.description}
+                  </div>
+                )
+              },
+            },
      ]}
      isLoading = {this.state.tableIsLoading}
       />
-            {this.state.currentModalTemplate}
+            {this.state.bulkAction.isConfirmed ? null : 
+              <ConfirmationModal message = "perform this bulk action" updateCallback = {this.bulkActionHandler}/>}
+            {this.state.Error.isError ? 
+              <ErrorModal updateCallback = {this.errorModalClose} errorMessage = {this.state.Error.message} ></ErrorModal> : null
+            }
           </>
         );
-     } else {
-       return (
-         this.state.errorModalPlaceholder
-       )
-     }
     }
 }

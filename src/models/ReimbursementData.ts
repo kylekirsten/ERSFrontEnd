@@ -47,11 +47,17 @@ export class ReimbursementData {
         }else{
             this.isOpen = true;
         }
-        console.log(this.isOpen)
-
     }
     public getAmount() : number {
         return this.amount;
+    }
+    public getNestedAuthorId() : number {
+        let authorObject : any = this.author;
+        return authorObject.userId;
+    }
+    public getNestedAuthorFullName() : string {
+        let authorObject : any = this.author;
+        return authorObject.firstName + ' ' + authorObject.lastName;
     }
     public getAuthor() : string {
         return this.author;
@@ -73,5 +79,8 @@ export class ReimbursementData {
     }
     public getType() : number {
         return this.type;
+    }
+    public getId() : number {
+        return this.reimbursementId;
     }
 }
