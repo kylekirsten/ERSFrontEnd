@@ -7,10 +7,12 @@ import ErrorModal from '../components/ui/popup/ErrorModal';
 import { IAuthState, IAppState } from '../reducers';
 import { loginSuccessful, toggleAuthStatus } from '../actions/Authentication.action';
 import { connect } from 'react-redux';
+import Spinner from 'react-bootstrap/Spinner';
 interface IState {
     validated : boolean;
-    errorModalPlaceholder : any;
     formFields : any;
+    Error: any;
+    isLoading: boolean;
 }
 export interface IAuthProps {
     //data from state store
@@ -22,7 +24,8 @@ export interface IAuthProps {
 export class Login extends Component<IAuthProps,IState> {
     state : IState = {
         validated : false,
-        errorModalPlaceholder: null,
+        Error: {isError: false, message: ''},
+        isLoading: false,
         formFields: {
             username: {
               value: ''
@@ -32,40 +35,40 @@ export class Login extends Component<IAuthProps,IState> {
             }
         }
       };
-      handleSubmit = (event : any) => {
+      handleSubmit = async (event : any) => {
         const form = event.currentTarget;
         const data = new FormData(event.target);
         event.preventDefault();
         if (form.checkValidity() === false) {
             event.stopPropagation();
         } else{
-            this.checkCredentials();
+            this.setState({...this.state, isLoading: true});
+            const result = await APICall.Login(this.state.formFields.username.value, this.state.formFields.password.value);
+            if(result instanceof Error){
+                this.showError(result.message);
+                this.setState({...this.state, isLoading: false});
+            }else{
+                window.localStorage.setItem('token', result.token);
+                this.props.loginSuccessful(result);
+                this.setState({...this.state, isLoading: false});
+                this.showError('ya logged in m8');
+            }
+            console.log(this.state);
         }
         this.setState({...this.state, validated: true});
       };
       showError = (message : any) => {
-        this.setState({...this.state, errorModalPlaceholder: 
-        <ErrorModal errorMessage = {message} updateCallback= {this.closeError}></ErrorModal>});
+        this.setState({...this.state, Error: {isError: true, message}});
       }
       closeError = () => {
-          this.setState({...this.state, errorModalPlaceholder: null, 
+          this.setState({...this.state, Error: {...this.state.Error, isError: false}, 
             formFields: {username: this.state.formFields.username, password: ''}});
       }
-      checkCredentials = async () => {
-        const result = await APICall.Login(this.state.formFields.username.value, this.state.formFields.password.value);
-        if(result instanceof Error){
-            this.showError(result.message);
-        }else{
-            console.log(result);
-            window.localStorage.setItem('token', result.token);
-            this.props.loginSuccessful(result);
-            this.showError('ya logged in m8');
-        }
-      }
+
       changeHandler = (event: any) => {    
         const name = event.target.name;
         const value = event.target.value;
-        this.setState({
+        this.setState({...this.state,
             formFields: {
                 ...this.state.formFields,
                 [name]: {
@@ -78,7 +81,8 @@ export class Login extends Component<IAuthProps,IState> {
     render() {  
         return (
             <div className = "login-container">
-                <h1 className ='page-title'>Login</h1>
+                {this.state.Error.isError ? <ErrorModal errorMessage = {this.state.Error.message} updateCallback= {this.closeError}></ErrorModal> : null}
+                <h1 className ='page-title in-container'>Login</h1>
                 <Form noValidate validated={this.state.validated} onSubmit={this.handleSubmit}>
                     <Form.Group controlId="formUsername">
                         <Form.Label>Username</Form.Label>
@@ -102,8 +106,10 @@ export class Login extends Component<IAuthProps,IState> {
                     <Button variant="primary" type="submit">
                     Submit
                     </Button>
+                    <span id = 'login-loading-container'>
+                    {this.state.isLoading ? <Spinner variant = 'dark' animation='border'/> : null}
+                    </span>
                 </Form>
-                {this.state.errorModalPlaceholder}
             </div>
         );
     

@@ -18,7 +18,7 @@ export default class Sidebar extends Component<IProps,IState> {
     }
     state : IState = {
         visible : this.props.startVisible,
-        Buttons : [new NavigationButton('/login','My Account'),
+        Buttons : [new NavigationButton('/reimbursements/1','My Reimbursements'),
                    new NavigationButton('/newreimbursement','New Reimbursement'),
                    new NavigationButton('/reimbursements','Reimbursement Management'),
                    new NavigationButton('/users','User Management'),

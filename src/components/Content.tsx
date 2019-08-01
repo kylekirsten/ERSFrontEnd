@@ -13,6 +13,8 @@ import * as Session from '../utils/Session';
 import { IAppState, IAuthState } from '../reducers';
 import { loginSuccessful, toggleAuthStatus } from '../actions/Authentication.action';
 import { connect } from 'react-redux';
+import NavDropdown from 'react-bootstrap/NavDropdown';
+import MyReimbursements from '../pages/MyReimbursements';
 interface IState {
     isAuthenticated : boolean;
 }
@@ -60,10 +62,19 @@ export class Content extends Component<IAuthProps,IState> {
     render() { 
         return (
             <>
-            <Navbar bg="dark" variant="dark" className="justify-content-end">
-              <Link to = "/"><Navbar.Brand>MyCompany ERS</Navbar.Brand></Link>
+            <Navbar bg="navblue" variant="dark" expand="md" className="justify-content-between">
+            <Nav.Item style={{color:'black', zIndex: -5}}>PlaceHolder Text</Nav.Item>
+                <Link to = "/"><Navbar.Brand>MyCompany ERS</Navbar.Brand></Link>
                 <Nav>
-                    <Nav.Link>My Account</Nav.Link>
+                    <NavDropdown fill title="My Account" id="account-nav-dropdown" className="account-nav-box">
+                        <NavDropdown.Item>Hello
+                        {' ' + this.props.auth.userProfile.firstName + ' '} {this.props.auth.userProfile.lastName}
+                        </NavDropdown.Item>
+                        <NavDropdown.Divider />
+                        <NavDropdown.Item><Link to = "/myaccount">My Account Details</Link></NavDropdown.Item>
+                        <NavDropdown.Item><Link to = {`/reimbursements/${this.props.auth.userProfile.userId}`}>My Reimbursements</Link></NavDropdown.Item>
+                        <NavDropdown.Item><Link to = "/logout">Logout</Link></NavDropdown.Item>
+                    </NavDropdown>
                 </Nav>
             </Navbar>
             <div className = 'content'>
@@ -75,6 +86,9 @@ export class Content extends Component<IAuthProps,IState> {
                     { this.props.auth.isVerified ? <Route exact path="/reimbursements" component={Reimbursements} /> :
                     <Redirect to="/login" />}
                     { this.props.auth.isVerified ? <Route exact path="/newreimbursement" component={NewReimbursement} /> :
+                    <Redirect to="/login" />}
+                     { this.props.auth.isVerified ? <Route exact path="/reimbursements/:userId"   
+                     component = {MyReimbursements} /> :
                     <Redirect to="/login" />}
                     <Route component={PageNotFound} />
                 </Switch>

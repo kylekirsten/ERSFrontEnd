@@ -4,7 +4,7 @@ import * as APICall from '../../../utils/APICall';
 import ErrorModal from '../popup/ErrorModal'
 import { ReimbursementData } from '../../../models/ReimbursementData';
 import ReimbursementEditModal from '../popup/ReimbursementEditModal';
-import * as DateFunctions from '../../../utils/DateFunctions';
+import * as Format from '../../../utils/Format';
 import Popover from 'react-bootstrap/Popover';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import './Table.css';
@@ -38,7 +38,7 @@ export class ReimbursementsTable extends Component<IProps,IState>{
              email: 'loading', role: {roleId: 0, role: 'loading'}}, resolver:
               {userId: 0, userName: 'loading', firstName: 'loading', lastName: 'loading',
               email: 'loading', role: {roleId: 0, role: 'loading'}}
-              ,dateSubmitted: 1000000, dateResolved: 10000000}],
+              ,dateSubmitted: 1000000, dateResolved: 10000000, type: {typeId: 0, type: 'loading'}}],
             tableIsLoading : true,
             currentReimbursementModal : new ReimbursementData(false, {}),
             currentModalTemplate : null,
@@ -138,7 +138,7 @@ export class ReimbursementsTable extends Component<IProps,IState>{
             <Popover id={`popover-${type}- ${rowData[type].userId}`}
                   title={rowData[type].firstName + ' ' + rowData[type].lastName}>
                 <p><i>Email</i>: {rowData[type].email}</p>
-                <p><i>Role</i> : {rowData[type].role.role.charAt(0) + rowData[type].role.role.substring(1).toLowerCase()}</p>
+                <p><i>Role</i> : {Format.uppercaseFirstLetter(rowData[type].role.role)}</p>
               </Popover>}>
               <a className = "username-link" onClick = {this.searchReimbursementsByUser}>{rowData[type].userName}</a>
 
@@ -152,9 +152,9 @@ export class ReimbursementsTable extends Component<IProps,IState>{
           <OverlayTrigger trigger="hover" placement="right"  delay={{ show: 300, hide: 300 }}
                             overlay={
             <Tooltip id={'popover-' + type + '-' + rowData[type]}>
-            {DateFunctions.convertTimestampToDate(rowData[type])}</Tooltip>
+            {Format.convertTimestampToDate(rowData[type])}</Tooltip>
                   }>
-              <a className = "username-link">{DateFunctions.readableTimestampSubtract(rowData[type])}</a>
+              <a className = "username-link">{Format.readableTimestampSubtract(rowData[type])}</a>
             </OverlayTrigger>        
       </> )
     }
@@ -169,6 +169,9 @@ export class ReimbursementsTable extends Component<IProps,IState>{
     
         },
          { title: 'Amount', field: 'amount', type: 'currency', searchable: false },
+         { title: 'Type', field: 'type.type', type: 'string', searchable: false, render: rowData => 
+         Format.uppercaseFirstLetter(rowData.type.type)},
+
          this.props.status === Status.Pending ? 
          { title: 'Submitted', field: 'dateSubmitted', defaultSort: 'desc', searchable: false, render: rowData =>
             this.renderRealDate(rowData, 'dateSubmitted')} :

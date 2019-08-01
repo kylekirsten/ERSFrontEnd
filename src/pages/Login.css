@@ -19,3 +19,8 @@ label[for=custom-rememberme-checkbox]::before {
     background-color: #007bff !important;
     box-shadow: none;
 }
+#login-loading-container{
+    margin-left: 10px;
+    line-height: 1.5;
+    height: 1rem;
+}

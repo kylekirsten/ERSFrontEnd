@@ -7,6 +7,7 @@ import "./Table.css";
 import { UserData } from "../../../models/UserData";
 import * as APICall from "../../../utils/APICall";
 import ErrorModal from "../popup/ErrorModal";
+import { Link } from "react-router-dom";
 interface IState {
     data: any[],
     currentEditModal: UserData,
@@ -83,7 +84,9 @@ class UserTable extends Component {
         suppressContentEditableWarning
       /><button className='btn btn-secondary' data-rowid = {cellInfo.index}
                 onClick={this.handleEditClick}>Edit User Information</button><br/>
-      <button className='btn btn-success'>View Reimbursements</button>
+      <Link to = {`/reimbursements/${this.state.data[cellInfo.index].userId}`}>
+        <button className='btn btn-success'>View Reimbursements</button>
+      </Link>
       </>
     );
   });

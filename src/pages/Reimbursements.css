@@ -1,6 +1,106 @@
-.nav-link .active {
-    background-color:#eee !important;
+.reimbursement-tab a {
+    cursor: pointer;
+    border-radius:50%;
+    color: white !important;
+    transition-duration: .25s;
+    list-style: none;
+    text-align: center;
+    padding: 20px 20px 25px 20px;
+    overflow: hidden;
+    cursor: pointer;
+    border-bottom:5px solid rgb(26, 121, 175);
+    
 }
-.content .nav-pills > .nav-link {
-    background-color: #000;
+.reimbursement-tab .active, .my-reimbursement-tabs .active {
+    color: black !important;
+    background-color: whitesmoke !important;
+}
+.reimbursement-tab .active {
+    border-bottom: 5px solid whitesmoke;
+
+}
+.reimbursement-tab:hover:before{
+    -webkit-transform: translateY(70%);
+    transform: translateY(70%);
+}
+.reimbursement-tab a:hover, .reimbursement-tab .active:hover{
+    border-bottom: 5px solid #eee;
+}
+.nav-pills[role='tablist'] {
+    background-color: rgb(26, 121, 175);
+}
+.reimbursement-tab .active:before{
+    transition-duration: .5s;
+    background-color: #eee !important;
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
+    z-index: -1;
+    content: "";
+    width: 100%;
+    height: 120%;
+    top: 0;
+    left: 0;
+    -webkit-transform: translateY(100%);
+    transform: translateY(100%);
+    transition-duration: .25s;
+    border-radius: 5px 5px 0 0;
+}
+.my-reimbursement-tabs{
+    max-height: 500px;
+    text-align:center;
+    display:block;
+    direction: rtl;
+    overflow-y:auto;
+    overflow-x:hidden;
+}
+.reimbursement-content{
+    background-color: white;
+}
+.my-reimbursement-tabs .nav-item a {
+    color: white !important;
+    direction:ltr;
+    display:flex;
+    padding:10px;
+    margin: 5px;
+    justify-content: space-evenly;
+}
+.my-reimbursement-tabs .nav-item a:hover {
+    box-shadow: inset 2px 2px 2px 2px #55555577;
+}
+.my-reimbursement-tabs .nav-item .active{
+    color: #020202 !important;
+}
+.my-reimbursement-tabs::-webkit-scrollbar{
+    width: 25px;
+    background-color:rgb(26, 121, 175) !important;
+    border-radius: 0;
+    cursor:pointer;
+}
+.my-reimbursement-tabs::-webkit-scrollbar-thumb{
+    border-radius: none !important;
+    cursor:pointer;
+    background-color:#343a40;
+    box-shadow: 20px inset #eee;
+
+}
+.my-reimbursement-tabs::-webkit-scrollbar-track{
+    background-color:transparent !important;
+    border-radius: none !important;
+    box-shadow:none;
+    cursor:pointer;
+
+}
+
+.reimbursement-description-container{
+    background-color:white;
+    max-height: 500px;
+    height: 500px;
+    padding: 20px;
+}
+.reimbursement-data-title{
+    text-align:center;
+}
+.loading-container{
+    margin:auto;
+    text-align:center;
 }

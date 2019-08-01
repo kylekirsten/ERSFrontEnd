@@ -3,7 +3,6 @@
 }
 .username-link{
     color: black !important;
-    text-decoration: underline;
 }
 .username-link:hover{
     cursor: pointer;

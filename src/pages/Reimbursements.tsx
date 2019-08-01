@@ -1,10 +1,7 @@
 import React, {Component} from 'react';
 import {ReimbursementsTable, Status} from '../components/ui/table/ReimbursementsTable';
 import './Reimbursements.css';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
 import Nav from 'react-bootstrap/Nav';
 interface IState {
@@ -44,22 +41,22 @@ export default class Reimbursements extends Component<{},IState> {
     render() {  
         return (
             <>
-            <h1 className ='page-title'>EDIT REIMBURSEMENTS PAGE</h1>
+            <h1 className ='page-title'>REIMBURSEMENT MANAGEMENT</h1>
             <Tab.Container defaultActiveKey="pending" onSelect = {this.lazyLoadTabs} transition = {false} id="reimbursement-tabs">
                 <Nav justify variant="pills">
                     <Col sm = {12} lg = {4}>
                         <Nav.Item className = 'reimbursement-tab'>
-                            <Nav.Link eventKey="pending">Pending</Nav.Link>
+                            <Nav.Link as = "a" eventKey="pending">Pending</Nav.Link>
                         </Nav.Item>
                     </Col>
                     <Col sm = {12} lg = {4}>
                         <Nav.Item className = 'reimbursement-tab'>
-                            <Nav.Link eventKey="approved">Approved</Nav.Link>
+                            <Nav.Link as = "a" eventKey="approved">Approved</Nav.Link>
                         </Nav.Item>
                     </Col>
                     <Col sm = {12} lg = {4}>
                         <Nav.Item className = 'reimbursement-tab'>
-                            <Nav.Link eventKey="denied">Denied</Nav.Link>
+                            <Nav.Link as = "a" eventKey="denied">Denied</Nav.Link>
                         </Nav.Item>
                     </Col>
                 </Nav>

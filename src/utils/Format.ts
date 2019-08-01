@@ -15,3 +15,6 @@ export function convertTimestampToDate(timestamp : number) : string{
 export function readableTimestampSubtract(timestamp : number) : string {
     return TimeAgo.format(timestamp);
 }
+export function uppercaseFirstLetter(text : string) : string {
+    return text.charAt(0) + text.substring(1).toLowerCase();
+}

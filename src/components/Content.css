@@ -1,11 +1,40 @@
+@media only screen and (max-width: 768px) {
+    h1.page-title {
+        font-size: 1em;
+    }  
+}
 .content{
     width: 100%;
     min-height:100%;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 5em 2em 2em 2em;
+    padding: 2em 2em 2em 2em;
     z-index:0;
 }
-.content .page-title{
+.content h1.page-title{
     text-align:center;
+    padding: 10px;
+    font-size: 2.3em;
 }
+.login-container .in-container{
+    background-color: transparent !important;
+    color:black !important;
+}
+h1 { 
+    color: #c9d0d4;
+     font-family: 'Helvetica Neue', sans-serif;
+    font-weight: 100;
+    line-height: 2em;
+    letter-spacing: 1px;
+    padding: 0 0 40px;
+    border-bottom: double #555;
+ }
+ 
+.account-nav-box > .dropdown-menu{
+    left: -65%;
+}
+.bg-navblue {
+    background-color: #555;
+    color: white;
+  }
+
