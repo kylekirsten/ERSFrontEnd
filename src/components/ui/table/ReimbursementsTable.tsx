@@ -169,7 +169,7 @@ export class ReimbursementsTable extends Component<IProps,IState>{
     
         },
          { title: 'Amount', field: 'amount', type: 'currency', searchable: false },
-         { title: 'Type', field: 'type.type', type: 'string', searchable: false, render: rowData => 
+         { title: 'Type', field: 'type.type', type: 'string', searchable: true, render: rowData => 
          Format.uppercaseFirstLetter(rowData.type.type)},
 
          this.props.status === Status.Pending ? 
