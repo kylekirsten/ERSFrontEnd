@@ -189,14 +189,10 @@ interface IState {
                     </Form.Control.Feedback>   
                   </Form.Group>
                 <div className = 'edit-reimbursement-buttons'>
-                  <Button variant="danger" onClick={this.handleClose}>
-                  Cancel
-                </Button>
                 <Button variant="secondary" onClick={this.handleRevert}>
                   Revert Changes
                 </Button>
                 <input className="btn btn-primary" type = "submit" value = "Save Changes"/>
-                <p>{this.state.isLoading}</p>
                 {this.state.isLoading ? <Spinner animation="border" role="status">
                   <span className="sr-only">Loading...</span>
                 </Spinner> : null}

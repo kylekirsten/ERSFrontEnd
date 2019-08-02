@@ -105,7 +105,7 @@ export class NewReimbursement extends Component<IAuthProps,IState> {
         
         return (
             <div className = "login-container">
-                <h1 className ='page-title in-container'>{this.state.isCreated ? "Reimbursement Created" : "New Reimbursement"}</h1>
+                <h1 className ='page-title in-container'>{this.state.isCreated ? "Request Sent" : "New Reimbursement"}</h1>
                 {this.state.Error.isError ? <ErrorModal errorMessage = {this.state.Error.message} 
                 updateCallback= {this.closeError} isCloseable={true}></ErrorModal> : null}
                                 {this.props.auth.userProfile.role.roleId < 1 ? <ErrorModal errorMessage = "You are not authorized to view this resource" 

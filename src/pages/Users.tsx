@@ -32,7 +32,7 @@ export class Users extends Component<IAuthProps,IState> {
 
         return (
             <>
-                <h1 className ='page-title'>EDIT USERS PAGE</h1>
+                <h1 className ='page-title'>USER MANAGEMENT</h1>
                 {this.props.auth.userProfile.role.roleId >= 2 ? null : <ErrorModal updateCallback={() => {return}} 
             errorMessage = "You are unauthorized to view this resource" isCloseable= {false}/>}
                 <UserTable role = {this.props.auth.userProfile.role.roleId}></UserTable>

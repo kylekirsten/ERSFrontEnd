@@ -101,7 +101,7 @@ export class Login extends Component<IAuthProps,IState> {
             <div className = "login-container">
                 {this.state.Error.isError ? <ErrorModal errorMessage = {this.state.Error.message} 
                 updateCallback= {this.closeError} isCloseable={true}></ErrorModal> : null}
-                {this.state.shouldRedirect ? <Redirect to = "/"/> : null }
+                {this.state.shouldRedirect ? <Redirect to = "/home"/> : null }
                 <h1 className ='page-title in-container'>Login</h1>
                 <Form noValidate validated={this.state.validated} onSubmit={this.handleSubmit}>
                     <Form.Group controlId="formUsername">

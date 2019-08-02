@@ -146,7 +146,7 @@ export class MyReimbursements extends Component<IProps,IState> {
                             <div className = 'reimbursement-description-container'>
                             <h2 className = 'reimbursement-data-title'>{Format.convertTimestampToDate(element.dateSubmitted)}</h2>
                             <Row><Col md= {element.dateResolved === null ? 12 : 6}><FormLabel>Status:</FormLabel> 
-                            <p>{Format.uppercaseFirstLetter(element.status.status)}</p></Col>
+                            {Format.uppercaseFirstLetter(element.status.status)}</Col>
                             {(element.dateResolved !== null ) ?
                             <Col md = {6}><Form.Label>Resolved:</Form.Label>
                                 <OverlayTrigger trigger="hover" placement="right"  delay={{ show: 300, hide: 300 }}

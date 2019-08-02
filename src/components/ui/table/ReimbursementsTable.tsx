@@ -114,14 +114,16 @@ export class ReimbursementsTable extends Component<IProps,IState>{
       if(!confirmed) { return;}
       this.setState({tableIsLoading: true});
       let keyword = this.state.bulkAction.currentAction;
-      let arr = await this.state.bulkAction.editData.forEach(async (element : any) => {
+      let arr = await this.state.bulkAction.editData.forEach(async (element : any, index: number) => {
         const loadedData = await APICall.PATCH('/reimbursements',
                             {reimbursementId: element.reimbursementId, status: keyword});
         if(loadedData instanceof Error){
           this.showServerError('Could not perform all actions due to : ' + loadedData.message);
           return;
         }
-        console.log(await loadedData)
+        if(index === this.state.bulkAction.editData.length - 1){
+          this.loadData();
+        }
       });
       this.setState({tableIsLoading : false});
 

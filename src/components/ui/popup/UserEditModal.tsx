@@ -153,8 +153,8 @@ interface IState {
               <Modal.Header closeButton>
                 <Modal.Title>Edit User: {this.props.editData.getUsername()}</Modal.Title>
               </Modal.Header>
-              <Modal.Body>
-                <Form>
+                <Form validated={this.state.validated} noValidate  onSubmit={this.handleSubmit}>
+                <Modal.Body>
                   <Form.Group controlId="formGroupEmail">
                     <Form.Label>Username</Form.Label>
                     <Form.Control type="text" required value = {this.state.formFields.username.value} name="username" onChange = {this.changeHandler} />
@@ -166,13 +166,14 @@ interface IState {
                   <Form.Group controlId="formGroupEmail">
                     <Form.Label>Password</Form.Label>
                     <Form.Control type="text" value = {this.state.formFields.password.value} name="password" onChange = {this.changeHandler} />
-                  </Form.Group>
                   <Form.Control.Feedback type="invalid">
                             Please enter a password
                         </Form.Control.Feedback>   
                         <Form.Text className="text-muted">
-                            Only put text in this field if you wish to change the user's password. Leave blank if you do not wish to do so.
+                            Only put text in this field if you wish to change the user's password.
                         </Form.Text>
+                        </Form.Group>
+
                   <Form.Group controlId="formGroupFirstName">
                     <Form.Label>First Name</Form.Label>
                     <Form.Control type="text" required value = {this.state.formFields.firstname.value} name="firstname" onChange = {this.changeHandler} />
@@ -201,20 +202,25 @@ interface IState {
                       <option value = {2}>Finance Manager</option>
                       <option value = {10}>Administrator</option>
                     </Form.Control>
+                    <Form.Text className="text-muted">
+                            Note: Role change will not affect current user session.
+                        </Form.Text>
                   </Form.Group>
-                </Form>
+
               </Modal.Body>
               <Modal.Footer>
                 <Button variant="secondary" onClick={this.handleRevert}>
                   Revert Changes
                 </Button>
-                <Button variant="primary" onClick={this.handleSubmit}>
+                <Button variant="primary" type="submit">
                   Save Changes
                 </Button>
                 {this.state.isLoading ? <Spinner variant = "dark" animation = "border"/> : null }
                 {this.state.Error.isError ? <ErrorModal updateCallback = {this.closeError} errorMessage = {this.state.Error.message} isCloseable={true}/>
                 : null }
               </Modal.Footer>
+              </Form>
+
             </Modal>
     </>
         )
