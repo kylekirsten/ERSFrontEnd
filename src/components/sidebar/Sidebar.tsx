@@ -33,6 +33,17 @@ export class Sidebar extends Component<IProps,IState> {
     componentDidMount() {
         
     }
+    componentDidUpdate(oldProps: { auth: any; }) {
+        const newProps = this.props
+        if(oldProps.auth !== newProps.auth) {
+          this.setState({Buttons : [new NavigationButton('/reimbursements/' + this.props.auth.userProfile.userId,'My Reimbursements', 1,10),
+          new NavigationButton('/newreimbursement','New Reimbursement', 1,10),
+          new NavigationButton('/reimbursements','Reimbursement Management', 2,10),
+          new NavigationButton('/users','User Management', 2,10),
+          new NavigationButton('/home','Home', 0, 10),
+          new NavigationButton('/login','Login', 0, 0)],})
+        }
+      }
     sidebarOpen = () => {
         this.setState({...this.state, visible: true});
     }

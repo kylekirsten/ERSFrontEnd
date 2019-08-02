@@ -28,7 +28,7 @@ export class Home extends Component<IAuthProps,{}> {
   <div className = "home-button-container">
       {this.props.auth.userProfile.role.roleId > 0 ? <>
     <Link to="/newreimbursement"><button className="home-button">Submit a new reimbursement</button></Link>
-    <Link to="/myaccount"><button className="home-button">View account</button></Link> </>
+    <Link to={'/myaccount/' + this.props.auth.userProfile.userId}><button className="home-button">View account</button></Link> </>
       :     <Link to="/login"><button className="home-button">Login</button></Link> }
   </div></div>
 </Jumbotron>

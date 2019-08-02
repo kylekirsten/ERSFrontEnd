@@ -77,7 +77,7 @@ export class Content extends Component<IAuthProps,IState> {
                         {' ' + this.props.auth.userProfile.firstName + ' '} {this.props.auth.userProfile.lastName}</p>
                         </NavDropdown.Item>
                         <NavDropdown.Divider />
-                        <NavDropdown.Item><Link to = "/myaccount">My Account Details</Link></NavDropdown.Item>
+                        <NavDropdown.Item><Link to = {`/myaccount/${this.props.auth.userProfile.userId}`}>My Account Details</Link></NavDropdown.Item>
                         <NavDropdown.Item><Link to = {`/reimbursements/${this.props.auth.userProfile.userId}`}>My Reimbursements</Link></NavDropdown.Item>
                         <NavDropdown.Item><a href='#' onClick = {(e) => this.logout()}>Logout</a></NavDropdown.Item>
                     </NavDropdown>
@@ -90,7 +90,7 @@ export class Content extends Component<IAuthProps,IState> {
                     {this.props.auth.isVerified && !this.props.auth.isFetching ? 
                     <>
                     <Route exact path="/users" component={Users} /> 
-                    <Route exact path="/myaccount" component={MyAccount} /> 
+                    <Route exact path="/myaccount/:userId" component={MyAccount} /> 
                     <Route exact path="/reimbursements" component={Reimbursements} /> 
                     <Route exact path="/newreimbursement" component={NewReimbursement} /> 
                      <Route exact path="/reimbursements/:userId" component = {MyReimbursements} />

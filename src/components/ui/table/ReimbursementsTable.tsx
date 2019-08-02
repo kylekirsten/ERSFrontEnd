@@ -248,9 +248,10 @@ export class ReimbursementsTable extends Component<IProps,IState>{
                       textAlign: 'center',
                       color: 'black',
                       backgroundColor: '',
+                      margin: 'auto',
                     }}
-                  >
-                    {rowData.description}
+                  ><h3>Comments:</h3>
+                    <p style = {{fontSize: '16px'}}>{rowData.description}</p>
                   </div>
                 )
               },
