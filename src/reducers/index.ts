@@ -2,6 +2,7 @@ import { combineReducers } from "redux";
 import { authReducer } from "./Authentication.reducer";
 
 export interface IAuthState {
+    lostConnection: boolean,
     isVerified : boolean, 
     userProfile : {userId : number, userName: string, firstName : string,
          lastName: string, email: string, role: {roleId : number, role: string}},

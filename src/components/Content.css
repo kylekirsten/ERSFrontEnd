@@ -16,7 +16,7 @@
     padding: 10px;
     font-size: 2.3em;
 }
-.login-container .in-container{
+.in-container{
     background-color: transparent !important;
     color:black !important;
 }
@@ -34,7 +34,12 @@ h1 {
     left: -65%;
 }
 .bg-navblue {
-    background-color: #555;
+    background-color: #2e517c;
     color: white;
   }
-
+.bg-navblue > .nav-item a{
+    color: white;
+}
+.new-reimbursement-create-receipt{
+    margin-top:50px;
+}

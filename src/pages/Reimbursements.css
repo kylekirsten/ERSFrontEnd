@@ -71,7 +71,7 @@
     color: #020202 !important;
 }
 .my-reimbursement-tabs::-webkit-scrollbar{
-    width: 25px;
+    width: 15px;
     background-color:rgb(26, 121, 175) !important;
     border-radius: 0;
     cursor:pointer;
@@ -79,7 +79,7 @@
 .my-reimbursement-tabs::-webkit-scrollbar-thumb{
     border-radius: none !important;
     cursor:pointer;
-    background-color:#343a40;
+    background-color:#555;
     box-shadow: 20px inset #eee;
 
 }
@@ -95,7 +95,15 @@
     background-color:white;
     max-height: 500px;
     height: 500px;
-    padding: 20px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-right: 190px;
+    padding-left: 190px;
+    display:flex;
+    justify-content: space-between;
+    flex-direction: column;
+    text-align:center;
+    background-color:white;
 }
 .reimbursement-data-title{
     text-align:center;
@@ -104,3 +112,19 @@
     margin:auto;
     text-align:center;
 }
+.reimbursement-description-container .form-label{
+    border-bottom: 1px solid #444;
+}
+.dot {
+    height: 100px;
+    width: 100px;
+    background-color: rgb(85, 90, 161);
+    border-radius: 50%;
+    display: inline-block;
+    border-width:3px;
+    border-style:solid;
+    border-color:#fefefe;
+    border-radius:50%;
+    box-shadow: 0px 1px 5px #888888;
+    margin-bottom:-15px;
+  }

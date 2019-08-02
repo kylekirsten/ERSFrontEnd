@@ -58,6 +58,7 @@ export class ReimbursementsTable extends Component<IProps,IState>{
     }  
     editModalClose = (() => {
       this.state.currentReimbursementModal.toggleOpenState();
+      this.loadData();
       this.setState({...this.state, isEditing: false});
 
     });
@@ -173,7 +174,7 @@ export class ReimbursementsTable extends Component<IProps,IState>{
          Format.uppercaseFirstLetter(rowData.type.type)},
 
          this.props.status === Status.Pending ? 
-         { title: 'Submitted', field: 'dateSubmitted', defaultSort: 'desc', searchable: false, render: rowData =>
+         { title: 'Submitted', field: 'dateSubmitted', defaultSort: 'asc', searchable: false, render: rowData =>
             this.renderRealDate(rowData, 'dateSubmitted')} :
           { title: 'Submitted', field: 'dateSubmitted', searchable: false, render: rowData =>
             this.renderRealDate(rowData, 'dateSubmitted')},
@@ -258,7 +259,7 @@ export class ReimbursementsTable extends Component<IProps,IState>{
             {this.state.bulkAction.isConfirmed ? null : 
               <ConfirmationModal message = "perform this bulk action" updateCallback = {this.bulkActionHandler}/>}
             {this.state.Error.isError ? 
-              <ErrorModal updateCallback = {this.errorModalClose} errorMessage = {this.state.Error.message} ></ErrorModal> : null
+              <ErrorModal isCloseable={true} updateCallback = {this.errorModalClose} errorMessage = {this.state.Error.message} ></ErrorModal> : null
             }
           </>
         );

@@ -1,14 +1,15 @@
 import axios from 'axios';
 import config from '../config.json';
-let instance = axios.create({
-  headers: {
-    common: {
-      Authorization: window.localStorage.getItem('token'),
+
+const GET = async (route: string = '/') => {
+  let requestConfig = {
+    headers: {
+      common: {
+        Authorization: (window.localStorage.getItem('token') || window.sessionStorage.getItem('token')),
+      }
     }
   }
-});
-const GET = async (route: string = '/') => {
-      const data = await instance.get(config.backend.serverURL + route).then((response : any) => {
+      const data = await axios.get(config.backend.serverURL + route,requestConfig).then((response : any) => {
           return response;
         })
         .catch((error) => {
@@ -17,6 +18,13 @@ const GET = async (route: string = '/') => {
         return generateAppropriateResponse(await data,false);
 }
 const POST = async (route: string = '/', data : any = {}) => {
+  let requestConfig = {
+    headers: {
+      common: {
+        Authorization: (window.localStorage.getItem('token') || window.sessionStorage.getItem('token')),
+      }
+    }
+  }
   //Should modify to use request.body instead of request.params
   let fullUrl = config.backend.serverURL + route + '?';
   //Generate appropriate Url
@@ -24,7 +32,7 @@ const POST = async (route: string = '/', data : any = {}) => {
     fullUrl += `${key}=${data[key as any]}&`;
   });
   fullUrl = fullUrl.substring(0,fullUrl.length - 1)
-  const responseData = await instance.post(fullUrl).catch((error) => {
+  const responseData = await axios.post(fullUrl,'',requestConfig).catch((error) => {
     return error.response;
   });
   let isLogin =  route === '/login' ? true : false;
@@ -35,6 +43,13 @@ const Login =  (async (username : string, password: string) => {
   return await POST('/login', {username: username, password: password});
 });
 const PATCH = async (route: string = '/', data : any = {}) => {
+  let requestConfig = {
+    headers: {
+      common: {
+        Authorization: (window.localStorage.getItem('token') || window.sessionStorage.getItem('token')),
+      }
+    }
+  }
   //Should modify to use request.body instead of request.params
   let fullUrl = config.backend.serverURL + route + '?';
   //Generate appropriate Url
@@ -42,7 +57,7 @@ const PATCH = async (route: string = '/', data : any = {}) => {
     fullUrl += `${key}=${data[key as any]}&`;
   });
   fullUrl = fullUrl.substring(0,fullUrl.length - 1);
-  const responseData = await instance.patch(fullUrl).catch((error) => {
+  const responseData = await axios.patch(fullUrl,'',requestConfig).catch((error) => {
     return error.response;
   });
   return generateAppropriateResponse(await responseData, false);

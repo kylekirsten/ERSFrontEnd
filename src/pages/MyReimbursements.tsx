@@ -16,12 +16,14 @@ import { IAuthState, IAppState } from '../reducers';
 import { RouteComponentProps } from 'react-router-dom';
 import { loginSuccessful, toggleAuthStatus } from '../actions/Authentication.action';
 import { connect } from 'react-redux';
+import Form from 'react-bootstrap/Form';
 
 interface IState {
     isLoading: boolean;
     Error: any;
     reimbursementData: any;
     userData: any;
+    isAuthorized: boolean;
 }
 type RouteParams = {
     userId: string; // must be type string since route params
@@ -56,6 +58,7 @@ export class MyReimbursements extends Component<IProps,IState> {
             reimbursementData:
              [{reimbursementId: null, author: null, description: '', status: {statusId: 0, status:'loading'}, resolver: 'loading' }],
             userData: {userName: 'loading', hash: '', firstName: 'loading', lastName: '', email: '', role: {roleId: 0, role:'User'}},
+            isAuthorized: false,
         }
     }
     componentDidUpdate(prevProps : any) {
@@ -90,15 +93,36 @@ export class MyReimbursements extends Component<IProps,IState> {
     closeErrorModal =(() => {
         this.setState({...this.state, Error: {isError: false, message: ''}})
     });
+    componentWillReceiveProps() {
+    let userRole : number;
+    if(this.props.auth.userProfile){
+        userRole = this.props.auth.userProfile.role.roleId;
+    } else {
+        userRole = 0;
+    }
+    if(userRole >= 1){
+        this.setState({...this.state,isAuthorized: true});
+        }
+    }
     render() {  
         return (
             <>
-            <h1 className ='page-title'>{this.props.auth.userProfile.userId === parseInt(this.props.match.params.userId,10)
+            <h1 className ='page-title'>{this.props.auth.userProfile.userId === parseInt(this.props.match.params.userId,10) || 
+            this.props.auth.userProfile.role.roleId < 2
              ? "My Reimbursements"
             : `${this.state.userData.firstName} ${this.state.userData.lastName}'s Reimbursements`}
+
             </h1><div className = "loading-container">{this.state.isLoading ? <Spinner animation="border" variant="light" />: null} </div>
-            {this.state.Error.isError ? <ErrorModal errorMessage={this.state.Error.message} updateCallback = {this.closeErrorModal}/>
+            {this.state.Error.isError ? <ErrorModal errorMessage={this.state.Error.message} 
+            updateCallback = {this.closeErrorModal} isCloseable={true}/>
             : null}
+            {(this.props.auth.userProfile.role.roleId === 1 && 
+            this.props.auth.userProfile.userId !== parseInt(this.props.match.params.userId))
+            ?
+            <ErrorModal errorMessage='You are not authorized to view this resource' 
+            updateCallback = {this.closeErrorModal} isCloseable={false}/> : null
+            }
+            
             <Tab.Container id="left-tabs-example" defaultActiveKey={0} transition={false}>
                 <Row>
                 <Col sm={3} >
@@ -117,13 +141,14 @@ export class MyReimbursements extends Component<IProps,IState> {
                 <Col sm={9}>
                     <Tab.Content>
                         {this.state.reimbursementData.map((element: any, index: number) => {
-                            return ( this.state.isLoading? null :
+                            return ( this.state.isLoading || this.state.reimbursementData[0].author === null ? null :
                             <Tab.Pane eventKey={index}>
                             <div className = 'reimbursement-description-container'>
                             <h2 className = 'reimbursement-data-title'>{Format.convertTimestampToDate(element.dateSubmitted)}</h2>
-                            <Row><Col><span className = 'reimbursement-data-status'><FormLabel>Status:</FormLabel> {element.status.status}</span></Col>
+                            <Row><Col md= {element.dateResolved === null ? 12 : 6}><FormLabel>Status:</FormLabel> 
+                            <p>{Format.uppercaseFirstLetter(element.status.status)}</p></Col>
                             {(element.dateResolved !== null ) ?
-                            <Col><span className = 'reimbursement-data-dateresolved'><FormLabel>Resolved:</FormLabel>
+                            <Col md = {6}><Form.Label>Resolved:</Form.Label>
                                 <OverlayTrigger trigger="hover" placement="right"  delay={{ show: 300, hide: 300 }}
                                 overlay={
                                     <Tooltip id={'data-dateresolved-' + index}>
@@ -132,10 +157,13 @@ export class MyReimbursements extends Component<IProps,IState> {
                                 <a className = "myreimbursements-dateresolved-link">
                                 {' '+Format.readableTimestampSubtract(element.dateResolved)}</a>
                                 </OverlayTrigger>
-                                </span></Col> : null}
+                                </Col> : null}
                             </Row>
-                            <FormLabel>Description:</FormLabel><br/>
-                            {element.description}
+                            <Row><Col sm= {6} md={4}><Form.Label>Amount Requested: </Form.Label><p>${element.amount}</p></Col>
+                            <Col sm = {0} md={0} lg={4}><span className="dot"></span></Col>
+                            <Col sm = {6} md={4}><Form.Label>Type:</Form.Label><p>{Format.uppercaseFirstLetter(element.type.type)}</p></Col></Row>
+                            <Row><Col><Form.Label>Comments:</Form.Label>
+                            <p>{element.description}</p></Col></Row>
                             </div></Tab.Pane>
                         )})}
                     </Tab.Content>

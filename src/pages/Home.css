@@ -1,0 +1,21 @@
+.home-button-container{
+    display:flex;
+    justify-content: space-evenly;
+}
+.jumbotron{
+    background-color:#dcdcdc;
+    width:100%;
+    max-width:500px;
+    min-width: 45%;
+    margin:auto;
+}
+.card-body{
+    margin:auto;
+}
+.card {
+    margin:auto;
+    width: 50%;
+}
+.card .form-label{
+    border-bottom: 1px solid #444;
+}

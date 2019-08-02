@@ -7,3 +7,6 @@
 .username-link:hover{
     cursor: pointer;
 }
+.pagination-bottom{
+    background-color:white;
+}

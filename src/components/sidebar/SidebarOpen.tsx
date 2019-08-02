@@ -12,7 +12,7 @@ interface IState {
     constructor(props : IProps){
         super(props);
         this.state = {
-            hoverStyle : {backgroundColor: '#999'},
+            hoverStyle : {backgroundColor: 'rgba(255,255,255,.75)'},
         }
     }  
     static propTypes = {
@@ -27,7 +27,7 @@ interface IState {
         this.setState({hoverStyle : {backgroundColor: '#eee'}});
     });
     endHover = ((event: MouseEvent<HTMLDivElement>) => {
-        this.setState({hoverStyle : {backgroundColor: '#999'}});
+        this.setState({hoverStyle : {backgroundColor: 'rgba(255,255,255,.75)'}});
     });
 
     render() {

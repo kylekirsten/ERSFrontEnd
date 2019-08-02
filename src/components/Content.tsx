@@ -3,7 +3,6 @@ import {Route, Switch, Link, Redirect } from "react-router-dom";
 import Home from '../pages/Home';
 import Users from '../pages/Users';
 import './Content.css';
-import PageNotFound from '../pages/PageNotFound';
 import Reimbursements from '../pages/Reimbursements'
 import Login from '../pages/Login'
 import Nav from 'react-bootstrap/Nav';
@@ -11,12 +10,16 @@ import Navbar from 'react-bootstrap/Navbar';
 import NewReimbursement from '../pages/NewReimbursement';
 import * as Session from '../utils/Session';
 import { IAppState, IAuthState } from '../reducers';
-import { loginSuccessful, toggleAuthStatus } from '../actions/Authentication.action';
+import { loginSuccessful, toggleAuthStatus, logout, beginLogin,
+     loginFailed, authTimerTick, lostConnection} from '../actions/Authentication.action';
 import { connect } from 'react-redux';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import MyReimbursements from '../pages/MyReimbursements';
+import LoadingModal from './ui/popup/LoadingModal';
+import ErrorModal from './ui/popup/ErrorModal';
+import config from '../config.json';
+import { MyAccount } from '../pages/MyAccount';
 interface IState {
-    isAuthenticated : boolean;
 }
 export interface IAuthProps {
     //data from state store
@@ -24,73 +27,76 @@ export interface IAuthProps {
     //Action creators from the dispatcher
     loginSuccessful: (dataObj : object) => void;
     toggleAuthStatus: () => void;
+    logout: () => void;
+    beginLogin: () => void;
+    loginFailed: () => void;
+    authTimerTick: () => void;
+    lostConnection: () => void;
 }
 export class Content extends Component<IAuthProps,IState> {
     state : IState = {
-        isAuthenticated: false,
     } 
     async componentDidMount(){
+        this.props.beginLogin();
         let token = window.localStorage.getItem('token') || window.sessionStorage.getItem('token');
         if(token){
-            this.props.loginSuccessful(await Session.retrieveSession(token as string));
-            console.log(this.props.auth.userProfile.lastName);
-        }
-        setInterval(async () => {
-            if(token){
-                let isValid = await Session.isValidSession(token);
-                if(!isValid){
-                    this.props.toggleAuthStatus();
-                }else{
-                    this.props.loginSuccessful(await Session.retrieveSession(token as string))
+            let retrievedSession = await Session.retrieveSession(token as string);
+            if(retrievedSession instanceof Error){
+                if(retrievedSession.message === config.messages.badToken){
+                    this.props.loginFailed();
+                } else {
+                this.props.lostConnection();
                 }
             } else {
-                    this.props.toggleAuthStatus();
+                this.props.loginSuccessful(retrievedSession);
             }
-        },60000);
-    }
-    async isAuthenticated() : Promise<boolean> {
-        let token = window.localStorage.getItem('token') || window.sessionStorage.getItem('token');
-        if(token){
-            let isValid = await Session.isValidSession(token) ? true : false;
-            return isValid;
-
         } else {
-            return false;
+            this.props.loginFailed();
         }
+        setInterval(() => {this.props.authTimerTick()},120000);
+    }
+    logout() {
+        Session.endSession();
+        this.props.logout();
     }
     
     render() { 
         return (
             <>
+            {this.props.auth.isFetching === true ? <LoadingModal message="Authenticating" updateCallback={()=>{}}/> : null}
+            {this.props.auth.lostConnection === true ? 
+            <ErrorModal errorMessage = "Could not verify session with server. Please refresh the page"
+                        updateCallback = {() => {}} isCloseable = {false}></ErrorModal> : null }
             <Navbar bg="navblue" variant="dark" expand="md" className="justify-content-between">
             <Nav.Item style={{color:'black', zIndex: -5}}>PlaceHolder Text</Nav.Item>
-                <Link to = "/"><Navbar.Brand>MyCompany ERS</Navbar.Brand></Link>
+                <Link to = "/home"><Navbar.Brand>MyCompany ERS</Navbar.Brand></Link>
+                {this.props.auth.isVerified ?
                 <Nav>
                     <NavDropdown fill title="My Account" id="account-nav-dropdown" className="account-nav-box">
-                        <NavDropdown.Item>Hello
-                        {' ' + this.props.auth.userProfile.firstName + ' '} {this.props.auth.userProfile.lastName}
+                        <NavDropdown.Item>Hello<p>
+                        {' ' + this.props.auth.userProfile.firstName + ' '} {this.props.auth.userProfile.lastName}</p>
                         </NavDropdown.Item>
                         <NavDropdown.Divider />
                         <NavDropdown.Item><Link to = "/myaccount">My Account Details</Link></NavDropdown.Item>
                         <NavDropdown.Item><Link to = {`/reimbursements/${this.props.auth.userProfile.userId}`}>My Reimbursements</Link></NavDropdown.Item>
-                        <NavDropdown.Item><Link to = "/logout">Logout</Link></NavDropdown.Item>
+                        <NavDropdown.Item><a href='#' onClick = {(e) => this.logout()}>Logout</a></NavDropdown.Item>
                     </NavDropdown>
-                </Nav>
+                </Nav> : <Nav.Item><Link to ='/login'>Login</Link></Nav.Item>}
             </Navbar>
             <div className = 'content'>
                 <Switch>
-                    <Route path="/" exact component={Home} />
-                    <Route path="/login" exact component={Login} />
-                    { this.props.auth.isVerified ? <Route exact path="/users" component={Users} /> :
-                    <Redirect to="/login" />}
-                    { this.props.auth.isVerified ? <Route exact path="/reimbursements" component={Reimbursements} /> :
-                    <Redirect to="/login" />}
-                    { this.props.auth.isVerified ? <Route exact path="/newreimbursement" component={NewReimbursement} /> :
-                    <Redirect to="/login" />}
-                     { this.props.auth.isVerified ? <Route exact path="/reimbursements/:userId"   
-                     component = {MyReimbursements} /> :
-                    <Redirect to="/login" />}
-                    <Route component={PageNotFound} />
+                <Route path = "/home" component={Home} />   
+                <Route path="/login" exact component={Login} />
+                    {this.props.auth.isVerified && !this.props.auth.isFetching ? 
+                    <>
+                    <Route exact path="/users" component={Users} /> 
+                    <Route exact path="/myaccount" component={MyAccount} /> 
+                    <Route exact path="/reimbursements" component={Reimbursements} /> 
+                    <Route exact path="/newreimbursement" component={NewReimbursement} /> 
+                     <Route exact path="/reimbursements/:userId" component = {MyReimbursements} />
+                     </>
+                : this.props.auth.isFetching === true ? null :<Redirect to = "/home"/> }
+                  
                 </Switch>
             </div>
             </>
@@ -106,6 +112,11 @@ const mapStateToProps = (state : IAppState) => {
 //This object definition will be used to map action creators to properties
 const mapDispatchToProps = {
     loginSuccessful: loginSuccessful,
-    toggleAuthStatus: toggleAuthStatus
+    toggleAuthStatus: toggleAuthStatus,
+    beginLogin: beginLogin,
+    loginFailed: loginFailed,
+    logout: logout,
+    authTimerTick: authTimerTick,
+    lostConnection: lostConnection,
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Content);

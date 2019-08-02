@@ -14,6 +14,10 @@
     "serverMessages": {
         "invalidToken" : "Authentication Unsuccessful. Invalid token supplied.",
         "unAuthorized" : "You are not authorized for this operation"
+    },
+    "information": {
+        "supportEmail": "support@mycompany.com",
+        "companyName": "MyCompany",
+        "turnAroundRate": 2
     }
-    
 }

@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from "prop-types";
 import Modal from 'react-bootstrap/Modal';
+import Spinner from 'react-bootstrap/Spinner';
 
 interface IProps {
     message: string
@@ -8,7 +9,7 @@ interface IProps {
 }
 interface IState {
 }
- class ErrorModal extends Component<IProps,IState>{
+ class LoadingModal extends Component<IProps,IState>{
     state : IState;
     constructor(props : IProps){
         super(props);
@@ -22,15 +23,18 @@ interface IState {
         return (
             <>
             <Modal show={true} animation centered>
-              <Modal.Header closeButton>
-                <Modal.Title>Loading...</Modal.Title>
+              <Modal.Header>
+                <Modal.Title>{this.props.message}</Modal.Title>
               </Modal.Header>
               <Modal.Body>
-                <p>{this.props.message}</p>
+                <div className='modal-loading-body'>
+                <Spinner variant = "dark" animation = "border"/>
+                <p>Loading... </p>
+                </div>
               </Modal.Body>
             </Modal>
     </>
         )
     }
 }
-export default ErrorModal;
+export default LoadingModal;

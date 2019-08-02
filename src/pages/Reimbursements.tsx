@@ -4,13 +4,21 @@ import './Reimbursements.css';
 import Col from 'react-bootstrap/Col';
 import Tab from 'react-bootstrap/Tab';
 import Nav from 'react-bootstrap/Nav';
+import { IAuthState, IAppState } from '../reducers';
+import { connect } from 'react-redux';
+import ErrorModal from '../components/ui/popup/ErrorModal';
 interface IState {
     activeKey : string;
     pendingTableContents : any;
     approvedTableContents: any;
     deniedTableContents : any;
+    isAuthorized: boolean;
+    userRole: number;
 }
-export default class Reimbursements extends Component<{},IState> {
+export interface IAuthProps {
+    auth: IAuthState,
+}
+export class Reimbursements extends Component<IAuthProps,IState> {
     constructor(props : any){
         super(props);
         this.state = {
@@ -18,10 +26,13 @@ export default class Reimbursements extends Component<{},IState> {
             pendingTableContents : null,
             approvedTableContents : null,
             deniedTableContents : null,
+            isAuthorized: false,
+            userRole : this.props.auth.userProfile.role.roleId,
         }
     }
     componentDidMount() {
-        this.setState({pendingTableContents : <ReimbursementsTable status = {Status.Pending}></ReimbursementsTable>})
+        this.setState({pendingTableContents : <ReimbursementsTable status = {Status.Pending}></ReimbursementsTable>});
+
     }
     lazyLoadTabs = (activeKey : string) => {
         this.setState({activeKey});
@@ -38,10 +49,16 @@ export default class Reimbursements extends Component<{},IState> {
                 break;
         }
     }
+    componentWillReceiveProps(){
+
+    }
     render() {  
+        console.log(this.props.auth.userProfile.role.roleId)
         return (
             <>
             <h1 className ='page-title'>REIMBURSEMENT MANAGEMENT</h1>
+            {this.state.userRole >= 2 ? null : <ErrorModal updateCallback={() => {return}} 
+            errorMessage = "You are unauthorized to view this resource" isCloseable= {false}/>}
             <Tab.Container defaultActiveKey="pending" onSelect = {this.lazyLoadTabs} transition = {false} id="reimbursement-tabs">
                 <Nav justify variant="pills">
                     <Col sm = {12} lg = {4}>
@@ -79,3 +96,9 @@ export default class Reimbursements extends Component<{},IState> {
     
     }
 }
+const mapStateToProps = (state : IAppState) => {
+    return {
+        auth: state.auth
+    }
+}
+export default connect(mapStateToProps)(Reimbursements);

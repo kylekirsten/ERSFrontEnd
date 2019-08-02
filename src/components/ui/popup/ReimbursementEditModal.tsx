@@ -206,7 +206,8 @@ interface IState {
             </Form>
 
             </Modal>
-            {this.state.Error.isError ? <ErrorModal errorMessage = {this.state.Error.message} updateCallback= {this.closeError}></ErrorModal> : null}
+            {this.state.Error.isError ? <ErrorModal errorMessage = {this.state.Error.message} 
+            updateCallback= {this.closeError} isCloseable={true}></ErrorModal> : null}
     </>
         )
     }

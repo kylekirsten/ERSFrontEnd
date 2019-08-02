@@ -6,6 +6,7 @@ import Modal from 'react-bootstrap/Modal';
 interface IProps {
     errorMessage: string
     updateCallback : Function,
+    isCloseable: boolean,
 }
 interface IState {
 }
@@ -18,7 +19,8 @@ interface IState {
     }  
     static propTypes = {
         errorMessage: PropTypes.string,
-        updateCallback: PropTypes.func
+        updateCallback: PropTypes.func,
+        isCloseable: PropTypes.bool,
       };
       private isOpen = true;
    handleClose = () => { this.isOpen = false;
@@ -28,18 +30,21 @@ interface IState {
     render(){
         return (
             <>
-            <Modal show={this.isOpen} onHide={this.handleClose} animation centered keyboard>
-              <Modal.Header closeButton>
+            <Modal show={this.isOpen} onHide={this.handleClose} animation centered keyboard={this.props.isCloseable}>
+              <Modal.Header closeButton={this.props.isCloseable}>
                 <Modal.Title>Error!</Modal.Title>
               </Modal.Header>
               <Modal.Body>
                 <p>{this.props.errorMessage}</p>
               </Modal.Body>
               <Modal.Footer>
+              {this.props.isCloseable ?
                 <Button variant="secondary" onClick={this.handleClose}>
                   OK
                 </Button>
+              : null}
               </Modal.Footer>
+
             </Modal>
     </>
         )

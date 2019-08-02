@@ -3,12 +3,22 @@ export class NavigationButton {
     private buttonText: string;
     private buttonColor: string;
     private buttonOrder: number;
+    private minimumRole: number;
+    private maximumRole: number;
 
-    constructor(route: string, buttonText: string, buttonColor: string = '', buttonOrder: number = 0){
+    constructor(route: string, buttonText: string, minimumRole : number, maximumRole : number, buttonColor: string = '', buttonOrder: number = 0){
         this.route = route;
         this.buttonText = buttonText;
         this.buttonColor = buttonColor;
         this.buttonOrder = buttonOrder;
+        this.minimumRole = minimumRole;
+        this.maximumRole = maximumRole;
+    }
+    getMaximumRole() : number {
+        return this.maximumRole;
+    }
+    getMinimumRole() : number {
+        return this.minimumRole;
     }
     getRoute() : string {
         return this.route;
@@ -21,6 +31,9 @@ export class NavigationButton {
     }
     getColor() : string {
         return this.buttonColor;
+    }
+    setUrl(url : string) : void {
+        this.route = url;
     }
 
 }

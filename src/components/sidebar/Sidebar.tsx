@@ -5,24 +5,33 @@ import SidebarButton from './SidebarButton';
 import {SidebarOpen} from './SidebarOpen';
 import  {Cross} from '../dialog/Cross';
 import {NavigationButton} from '../../models/NavigationButton';
+import { IAuthState, IAppState } from '../../reducers';
+import {connect} from 'react-redux';
 interface IState {
     visible: boolean,
     Buttons: NavigationButton[],
 }
-interface IProps {
+interface ComponentProps {
     startVisible : boolean;
 }
-export default class Sidebar extends Component<IProps,IState> {
-    static propTypes = {
-        startVisible : PropTypes.bool,
-    }
+export interface IAuthProps {
+    auth: IAuthState,
+}
+type IProps = ComponentProps & IAuthProps;
+export class Sidebar extends Component<IProps,IState> {
+
     state : IState = {
         visible : this.props.startVisible,
-        Buttons : [new NavigationButton('/reimbursements/1','My Reimbursements'),
-                   new NavigationButton('/newreimbursement','New Reimbursement'),
-                   new NavigationButton('/reimbursements','Reimbursement Management'),
-                   new NavigationButton('/users','User Management'),
-                   new NavigationButton('/login','Login')],
+        Buttons : [new NavigationButton('/reimbursements/','My Reimbursements', 1,10),
+                   new NavigationButton('/newreimbursement','New Reimbursement', 1,10),
+                   new NavigationButton('/reimbursements','Reimbursement Management', 2,10),
+                   new NavigationButton('/users','User Management', 2,10),
+                   new NavigationButton('/home','Home', 0, 10),
+                   new NavigationButton('/login','Login', 0, 0)],
+
+    }
+    componentDidMount() {
+        
     }
     sidebarOpen = () => {
         this.setState({...this.state, visible: true});
@@ -31,14 +40,30 @@ export default class Sidebar extends Component<IProps,IState> {
         this.setState({...this.state, visible : false});
     }
     render() {
+        let userRole : number;
+        if(this.props.auth.userProfile){
+            userRole = this.props.auth.userProfile.role.roleId;
+        } else {
+            userRole = 0;
+        }
+        let showButtons = this.state.Buttons.filter((element : NavigationButton) => {
+            if(userRole >= element.getMinimumRole() && userRole <= element.getMaximumRole()){
+                if(element.getRoute() === '/reimbursements/'){
+                    element.setUrl('/reimbursements/' + this.props.auth.userProfile.userId)
+                }
+                return element;
+            }
+            return false;
+        })
         //Style hides the sidebar with animation if visible is set to false. Otherwise it is displayed
         const style = this.state.visible ? {transition: 'all 0.5s ease-in-out'} 
         : {transform: 'translate3d(0, -100%, 0)',
         transition: 'all 0.5s ease-in-out'};
-        const buttonArray : any = this.state.Buttons.map((i : any) => {
-                return (<SidebarButton key = {this.state.Buttons.indexOf(i)} text = {i.getText()} 
+        const buttonArray : any = showButtons.map((i : any) => {
+                return (<SidebarButton key = {showButtons.indexOf(i)} text = {i.getText()} 
                                        route = {i.getRoute()} color = {i.getColor()} clickCallback={this.sidebarClose}></SidebarButton>);
         })
+
         return (
             <>
                 <SidebarOpen openCallback = {this.sidebarOpen}/>
@@ -52,3 +77,9 @@ export default class Sidebar extends Component<IProps,IState> {
         );
     }
 }
+const mapStateToProps = (state : IAppState) => {
+    return {
+        auth: state.auth
+    }
+}
+export default connect(mapStateToProps)(Sidebar);

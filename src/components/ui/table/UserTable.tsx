@@ -14,25 +14,32 @@ interface IState {
     modalTemplate: any,
     errorModalPlaceholder: any,
 }
-class UserTable extends Component {
-  handleChange = ((event : any) => {
-  });
-  state : IState = {
+interface IProps{
+  role: number;
+}
+class UserTable extends Component<IProps,IState> {
+  constructor(props : any){
+    super(props);
+    this.state = {
       data : [{}],
       currentEditModal: new UserData(false,[]),
       modalTemplate : <div></div>,
       errorModalPlaceholder:null,
   };
+  }
+  handleChange = ((event : any) => {
+  });
+  
   async loadData() {
     this.setState({data: [{userName: 'loading'}]});
     const loadedData = await APICall.GET('/users');
     if(loadedData instanceof Error){
       this.setState({errorModalPlaceholder: 
-      <ErrorModal updateCallback = {this.errorModalClose} errorMessage = {loadedData.message} ></ErrorModal>});
+      <ErrorModal updateCallback = {this.errorModalClose} errorMessage = {loadedData.message} isCloseable={true}></ErrorModal>});
     }else{
       const newArr : any = loadedData;
       newArr.forEach((element : any) => {
-        newArr[newArr.indexOf(element)].role = element.role.roleType;
+        newArr[newArr.indexOf(element)].role = element.role.role;
       });
       this.setState({data : newArr});
     }
@@ -46,6 +53,17 @@ class UserTable extends Component {
 
   handleEditClick = ((e: any) => {
     const values : string[] = Object.values(this.state.data[e.currentTarget.dataset.rowid]);
+    switch(values[6]){
+      case "USER":
+        values[6] = "1";
+        break;
+      case "FINANCE-MANAGER":
+        values[6] = "2";
+        break;
+      case "ADMIN":
+        values[6] = "10";
+        break;
+    }
     const newUserData = new UserData(true, values);
     this.setState({...this.state, currentEditModal : newUserData});
     this.setState({...this.state, modalTemplate: <UserEditModal editData = {newUserData}
@@ -53,6 +71,7 @@ class UserTable extends Component {
   });
 
   HandleUpdate = ((event: any) => {
+    this.loadData();
     this.state.currentEditModal.toggleOpenState();
     
   this.setState({...this.state, modalTemplate : <></>});
@@ -82,8 +101,8 @@ class UserTable extends Component {
         style={{ backgroundColor: "" }}
         
         suppressContentEditableWarning
-      /><button className='btn btn-secondary' data-rowid = {cellInfo.index}
-                onClick={this.handleEditClick}>Edit User Information</button><br/>
+      />{this.props.role >= 10 ?<><button className='btn btn-secondary' data-rowid = {cellInfo.index}
+                onClick={this.handleEditClick}>Edit User Information</button><br/></> : null}
       <Link to = {`/reimbursements/${this.state.data[cellInfo.index].userId}`}>
         <button className='btn btn-success'>View Reimbursements</button>
       </Link>
@@ -126,7 +145,7 @@ class UserTable extends Component {
               },
               {
                 Header: "Role",
-                accessor: "role.roleType",
+                accessor: "role",
               },
               {
                 Header: "Actions",

@@ -32,6 +32,9 @@ export class UserData {
         console.log(this.isOpen)
 
     }
+    getId(): number {
+        return this.userId;
+    }
     getUsername() : string {
         return this.userName;
     }
@@ -45,6 +48,7 @@ export class UserData {
         return this.email;
     }
     getRole() : number {
+        console.log(this.role);
         return this.role;
     }
 }
