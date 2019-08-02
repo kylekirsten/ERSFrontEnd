@@ -12,3 +12,8 @@
     margin: auto;
     text-align: center;
 }
+.modal-loading-body{
+    margin:auto;
+    display:flex;
+    justify-content: center;
+}

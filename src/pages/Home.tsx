@@ -14,7 +14,7 @@ export class Home extends Component<IAuthProps,{}> {
         return (
             <>
                 <Jumbotron><div className = 'login-container'>
-            <h1 className = "page-title in-container">Welcome to the new ERS!</h1>
+            <h1 className = "page-title in-container">Welcome to the ERS!</h1>
   <p>
     This Expense Reimbursement System (ERS) has been newly designed with *you* in mind.
     The application allows you to submit new reimbursement requests and track their status through an intuitive interface.

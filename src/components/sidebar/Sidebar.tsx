@@ -22,7 +22,7 @@ export class Sidebar extends Component<IProps,IState> {
 
     state : IState = {
         visible : this.props.startVisible,
-        Buttons : [new NavigationButton('/reimbursements/','My Reimbursements', 1,10),
+        Buttons : [new NavigationButton('/reimbursements/' + this.props.auth.userProfile.userId,'My Reimbursements', 1,10),
                    new NavigationButton('/newreimbursement','New Reimbursement', 1,10),
                    new NavigationButton('/reimbursements','Reimbursement Management', 2,10),
                    new NavigationButton('/users','User Management', 2,10),
